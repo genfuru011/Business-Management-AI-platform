@@ -1,0 +1,25 @@
+# See https://aka.ms/devcontainer for more information.
+# This is a basic devcontainer.json for a Node.js + Next.js project
+{
+    "name": "Business Management AI Platform",
+    "image": "mcr.microsoft.com/devcontainers/typescript-node:20",
+    "features": {},
+    "customizations": {
+        "vscode": {
+            "settings": {},
+            "extensions": [
+                "esbenp.prettier-vscode",
+                "dbaeumer.vscode-eslint",
+                "ms-azuretools.vscode-docker"
+            ]
+        }
+    },
+    "postCreateCommand": "npm install",
+    "forwardPorts": [3000],
+    "portsAttributes": {
+        "3000": {
+            "label": "Next.js App",
+            "onAutoForward": "openPreview"
+        }
+    }
+}
