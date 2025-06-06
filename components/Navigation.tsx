@@ -17,7 +17,6 @@ import { cn } from '@/lib/utils'
 
 const navigation = [
   { name: 'ダッシュボード', href: '/dashboard', icon: LayoutDashboard },
-  { name: 'AIチャット', href: '/', icon: MessageSquare },
   { name: '顧客管理', href: '/customers', icon: Users },
   { name: '在庫管理', href: '/products', icon: Package },
   { name: '請求書', href: '/invoices', icon: FileText },
