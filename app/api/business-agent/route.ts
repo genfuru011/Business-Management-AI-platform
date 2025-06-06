@@ -5,9 +5,15 @@ export const maxDuration = 30
 
 export async function POST(req: NextRequest) {
   try {
-    const { query, endpoint, modelName } = await req.json()
+    const { 
+      query, 
+      provider,
+      apiKey,
+      modelId,
+      apiEndpoint 
+    } = await req.json()
 
-    console.log('Business AI Agent Request:', { query, endpoint, modelName })
+    console.log('Business AI Agent Request:', { query, provider, modelId })
 
     if (!query || typeof query !== 'string') {
       return NextResponse.json(
@@ -17,7 +23,12 @@ export async function POST(req: NextRequest) {
     }
 
     // AIエージェントでクエリを処理
-    const result = await processBusinessQuery(query, endpoint, modelName)
+    const result = await processBusinessQuery(query, {
+      provider,
+      apiKey,
+      modelId,
+      apiEndpoint
+    })
 
     // ストリーミングレスポンスを返す
     return new Response(result.toAIStream(), {

@@ -1,0 +1,69 @@
+{
+  "finances": {
+    "expenses": [
+      {
+        "id": "E2025-06-001",
+        "description": "オフィス賃料",
+        "amount": 150000,
+        "category": "賃貸料",
+        "date": "2025-06-01",
+        "vendor": "不動産管理会社"
+      },
+      {
+        "id": "E2025-06-002",
+        "description": "マーケティング広告費",
+        "amount": 100000,
+        "category": "広告宣伝費",
+        "date": "2025-06-15",
+        "vendor": "広告代理店"
+      },
+      {
+        "id": "E2025-05-001",
+        "description": "オフィス賃料",
+        "amount": 150000,
+        "category": "賃貸料",
+        "date": "2025-05-01",
+        "vendor": "不動産管理会社"
+      },
+      {
+        "id": "E2025-05-002",
+        "description": "備品購入",
+        "amount": 50000,
+        "category": "事務用品",
+        "date": "2025-05-10",
+        "vendor": "オフィス用品店"
+      },
+      {
+        "id": "E2024-06-001",
+        "description": "システム開発費",
+        "amount": 80000,
+        "category": "外注費",
+        "date": "2024-06-15",
+        "vendor": "開発会社"
+      }
+    ],
+    "analytics": {
+      "totalSales": 1760000,
+      "totalExpenses": 530000,
+      "netProfit": 1230000,
+      "profitMargin": 69.9,
+      "monthlySales": [
+        {"month": "2025-01", "amount": 800000},
+        {"month": "2025-02", "amount": 950000},
+        {"month": "2025-03", "amount": 1100000},
+        {"month": "2025-04", "amount": 1250000},
+        {"month": "2025-05", "amount": 1400000},
+        {"month": "2025-06", "amount": 1760000}
+      ],
+      "monthlyExpenses": [
+        {"month": "2025-01", "amount": 350000},
+        {"month": "2025-02", "amount": 380000},
+        {"month": "2025-03", "amount": 410000},
+        {"month": "2025-04", "amount": 440000},
+        {"month": "2025-05", "amount": 470000},
+        {"month": "2025-06", "amount": 530000}
+      ],
+      "salesGrowth": 12.5
+    }
+  }
+}

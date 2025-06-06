@@ -1,0 +1,49 @@
+{
+  "products": [
+    {
+      "name": "ビジネス戦略コンサルティング",
+      "sku": "CONS-001",
+      "price": 300000,
+      "cost": 150000,
+      "category": "コンサルティング",
+      "stock": 100,
+      "description": "包括的なビジネス戦略立案支援サービス"
+    },
+    {
+      "name": "AIデータ分析パッケージ",
+      "sku": "AI-001",
+      "price": 250000,
+      "cost": 100000,
+      "category": "AI",
+      "stock": 50,
+      "description": "AIを活用したデータ分析・可視化サービス"
+    },
+    {
+      "name": "ウェブサイト構築サービス",
+      "sku": "WEB-001",
+      "price": 500000,
+      "cost": 200000,
+      "category": "Web開発",
+      "stock": 20,
+      "description": "レスポンシブ対応の企業向けウェブサイト制作"
+    },
+    {
+      "name": "デジタルマーケティング支援",
+      "sku": "MARK-001",
+      "price": 150000,
+      "cost": 70000,
+      "category": "マーケティング",
+      "stock": 80,
+      "description": "包括的なデジタルマーケティング戦略と実装"
+    },
+    {
+      "name": "クラウド移行支援",
+      "sku": "CLOUD-001",
+      "price": 400000,
+      "cost": 180000,
+      "category": "ITインフラ",
+      "stock": 30,
+      "description": "既存システムのクラウド環境への移行支援"
+    }
+  ]
+}

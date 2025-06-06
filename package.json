@@ -1,21 +1,15 @@
 {
-  "name": "local-llm-chat",
-  "version": "2.0.0",
-  "description": "Local LLM Chat - AI powered chat application",
-  "author": "Local LLM Chat Team",
+  "name": "business-management-ai",
+  "version": "1.0.0",
+  "description": "AI-Integrated Business Management Platform",
+  "author": "AI Business Management Team",
   "private": true,
-  "main": "main.js",
-  "homepage": "./",
   "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "electron": "electron .",
-    "electron-dev": "concurrently \"npm run dev\" \"wait-on http://localhost:3000 && electron .\"",
-    "build-electron": "npm run build && electron-builder",
-    "dist": "npm run build && electron-builder --publish=never"
+    "lint": "next lint"
   },
   "dependencies": {
     "@ai-sdk/openai": "^0.0.50",
@@ -45,65 +39,12 @@
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
     "autoprefixer": "^10.0.1",
-    "concurrently": "^9.1.2",
-    "create-dmg": "^7.0.0",
-    "electron": "^36.4.0",
-    "electron-builder": "^26.0.12",
-    "electron-updater": "^6.6.2",
     "eslint": "^8.0.0",
     "eslint-config-next": "15.0.0",
     "jest": "^29.7.0",
     "postcss": "^8.0.0",
     "tailwindcss": "^3.3.0",
     "ts-jest": "^29.3.4",
-    "typescript": "^5.0.0",
-    "wait-on": "^8.0.3"
-  },
-  "build": {
-    "appId": "com.example.local-llm-chat",
-    "productName": "Local LLM Chat",
-    "directories": {
-      "output": "dist"
-    },
-    "files": [
-      "main.js",
-      ".next/**/*",
-      "public/**/*",
-      "node_modules/**/*",
-      "package.json"
-    ],
-    "extraFiles": [
-      {
-        "from": "build/app-icon.icns",
-        "to": "Resources/app-icon.icns"
-      }
-    ],
-    "publish": {
-      "provider": "github",
-      "owner": "your-username",
-      "repo": "local-llm-chat"
-    },
-    "mac": {
-      "category": "public.app-category.productivity",
-      "target": [
-        {
-          "target": "dmg",
-          "arch": [
-            "x64",
-            "arm64"
-          ]
-        }
-      ]
-    },
-    "win": {
-      "target": "nsis"
-    },
-    "linux": {
-      "target": "AppImage"
-    },
-    "nsis": {
-      "oneClick": false,
-      "allowToChangeInstallationDirectory": true
-    }
+    "typescript": "^5.0.0"
   }
 }

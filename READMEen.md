@@ -1,9 +1,9 @@
-# 🤖 Local LLM Chat
+# 🚀 AI-Integrated Business Management Platform
 
-**Private & Secure Local AI Chat Application**
+**Next-Generation Business Analytics & Management System Powered by AI**
 
-![Version](https://img.shields.io/badge/version-2.0.0-blue.svg)
-![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows-lightgrey.svg)
+![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)
+![Platform](https://img.shields.io/badge/platform-Web-lightgrey.svg)
 ![Next.js](https://img.shields.io/badge/Next.js-15.0.0-black.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 
@@ -11,70 +11,64 @@
 
 ## 🌟 Overview
 
-Local LLM Chat is an AI chat application that runs entirely in your local environment. Enjoy private and secure AI conversations without internet connectivity.
+The AI-Integrated Business Management Platform is an all-in-one solution that leverages artificial intelligence for business data analysis, decision support, and operational efficiency. It provides real-time support for data-driven business decisions.
 
 ### ✨ Key Features
 
-- 🔒 **Privacy-First** - All data stored locally
-- 🚀 **Easy Installation** - One-click auto-installation of Ollama and Node.js
-- 🎨 **Modern UI** - Beautiful and intuitive user interface
-- ⚡ **Fast Response** - Real-time conversations with local processing
-- 🔄 **Model Management** - Easy AI model download and switching
-- 🌐 **Cross-Platform** - macOS and Windows support
+- 🧠 **AI Business Agent** - Business analysis and recommendations through natural language
+- 📊 **Real-time Monitoring** - Visualize business metrics in real-time
+- 📈 **Performance Analysis** - Optimization recommendations for system and business processes
+- 📝 **Automated Report Generation** - Create comprehensive business reports automatically
+- 📱 **Modern UI/UX** - Intuitive and user-friendly interface
+- 🔄 **AI Learning System** - Continuous improvement through user feedback
 
-## 📦 Installation
+## 📦 System Requirements
 
-### macOS (Recommended)
+## 🚀 Core Features
 
-1. Download [Local-LLM-Chat-Installer.dmg](./dist/Local-LLM-Chat-Installer.dmg)
-2. Open the DMG file and drag to Applications folder
-3. Launch the application (auto-setup on first run)
+### 🧠 AI Business Agent
 
-### Windows
+- **Natural Language Query Processing**: Ask business questions in natural language
+- **Intent Analysis**: Identify appropriate business functions from queries
+- **Data-Driven Responses**: Analysis and recommendations based on actual business data
+- **Continuous Learning**: Improved accuracy through user feedback
 
-1. Download [Local-LLM-Chat-Windows-Portable.zip](./dist/Local-LLM-Chat-Windows-Portable.zip)
-2. Extract to your preferred location
-3. Run `Local LLM Chat.exe`
-4. See [Windows Setup Guide](./dist/WINDOWS-SETUP-GUIDE.md) for detailed instructions
+### 📊 Business Insights
 
-## 🚀 Usage
+- **Sales Analysis**: Trend analysis and sales forecasting
+- **Customer Management**: Customer trends and satisfaction analysis
+- **Inventory Optimization**: Analysis of inventory status and restocking suggestions
+- **Financial Health**: Profitability analysis and improvement recommendations
 
-### First Launch
+### 📈 Performance Monitoring
 
-1. Launch the application and it will automatically open your browser
-2. Required dependencies (Ollama & Node.js) will be auto-installed
-3. Select and download an AI model from the settings panel
-4. Start chatting!
+- **Real-time Metrics**: Real-time display of key business indicators
+- **System Monitoring**: Monitor CPU/memory/disk usage
+- **Optimization Suggestions**: Specific recommendations for performance improvement
+- **Alert Functions**: Notifications of important changes
 
-### AI Model Management
+### 📝 Report Generation
 
-- **Model Selection**: Choose from available models in the dropdown menu
-- **Custom Models**: Use "Custom Model" option to enter model names
-- **Download**: Monitor download progress with the progress bar
-- **Delete**: Easily remove unused models
+- **Comprehensive Reports**: Complete reports covering all business areas
+- **Sectional Analysis**: Detailed analysis by department/function
+- **Insight Generation**: Extraction of critical insights from data
+- **Export Functionality**: Report output in various formats
 
-### Supported Models
+## 🛠️ Developer Information
 
-- **Gemma2**: High-performance models by Google
-- **Llama3**: Latest models by Meta
-- **Mistral**: Lightweight and fast models
-- **CodeLlama**: Programming-specialized models
-- Other Ollama-compatible models
+### Technology Stack
 
-## 🛠️ For Developers
-
-### Prerequisites
-
-- Node.js 18 or higher
-- npm or yarn
-- Ollama
+- **Frontend**: Next.js, React, TailwindCSS
+- **AI Processing**: Ollama, AI SDK
+- **Data Processing**: Custom Business Analytics Engines
+- **UI/UX**: Lucide Icons, Shadcn UI Components
 
 ### Setup
 
 ```bash
 # Clone the repository
-git clone <repository-url>
-cd local-llm-chat
+git clone https://github.com/your-username/Business-Management-AI-platform.git
+cd Business-Management-AI-platform
 
 # Install dependencies
 npm install
@@ -83,80 +77,112 @@ npm install
 npm run dev
 ```
 
-### Build
-
-```bash
-# Production build
-npm run build
-
-# Create macOS installer
-./create-installer.sh
-
-# Create Windows portable version
-./create-windows-installer.sh
-```
-
 ### Project Structure
 
 ```
-📦 local-llm-chat/
-├── app/                    # Next.js application
-│   ├── api/               # API endpoints
-│   ├── page.tsx           # Main chat UI
-│   └── layout.tsx         # App layout
-├── components/            # UI components
-├── lib/                   # Utility functions
-├── dist/                  # Distribution files
-└── build/                 # Build artifacts
+/
+├── app/                      # Main directory for Next.js application
+│   ├── api/                  # API endpoints
+│   │   ├── business-agent/   # Business AI agent API
+│   │   ├── business-report/  # Report generation API
+│   │   ├── analytics/        # Analytics data API
+│   │   └── ...               # Other APIs
+│   ├── dashboard/            # Dashboard page
+│   ├── customers/            # Customer management page
+│   ├── finances/             # Financial management page
+│   └── ...                   # Other pages
+├── components/               # React components
+│   ├── BusinessAIAgent.tsx   # AI agent component
+│   ├── AIQuickActions.tsx    # Quick actions component
+│   ├── RealTimeBusinessMonitor.tsx # Real-time monitor
+│   └── ui/                   # UI components
+├── data/                     # Sample & demo data
+│   ├── customers.json        # Customer data
+│   ├── products.json         # Product data
+│   ├── sales.json            # Sales data
+│   └── finances.json         # Financial data
+├── docs/                     # Project documentation
+│   ├── INSTALLATION_GUIDE.md # Installation guide
+│   ├── FINAL_SYSTEM_TEST.md  # System test results
+│   └── ...                   # Other documents
+├── lib/                      # Utilities and common functions
+│   ├── ai-agent.ts           # AI agent framework
+│   ├── ai-learning.ts        # AI learning system
+│   ├── business-report.ts    # Report generation system
+│   └── performance-monitor.ts # Performance monitoring
+├── public/                   # Static files
+│   └── images/               # Image files
+├── tests/                    # Test files
+└── docs/                     # Documentation
 ```
 
 ## 🔧 Tech Stack
 
 - **Frontend**: Next.js 15.0.0, React, TypeScript
 - **Styling**: Tailwind CSS, shadcn/ui
-- **Desktop**: Electron
-- **AI**: Ollama, Vercel AI SDK
-- **Build**: electron-builder
+- **AI Processing**: Ollama, Vercel AI SDK
+- **Database**: MongoDB, JSON data
+- **Data Processing**: Custom Business Analytics Engine
+- **UI Components**: Lucide Icons, shadcn/ui
 
-## 📚 Documentation
+## 📊 System Highlights
 
-- [Installation Guide](./INSTALLATION_GUIDE.md) (Japanese)
-- [Auto-Installation Guide](./AUTO_INSTALL_GUIDE.md) (Japanese)
-- [Windows Setup Guide](./dist/WINDOWS-SETUP-GUIDE.md)
-- [Installer Status](./INSTALLER_STATUS.md) (Japanese)
-- [Project Cleanup Report](./CLEANUP_REPORT.md) (Japanese)
+### Evolution of AI Agents
+
+This system applies the concept of coding assistants like GitHub Copilot to business management. It realizes a next-generation business assistant that integrates intent recognition, context understanding, data access, and continuous learning.
+
+### Data-Driven Analysis
+
+- **Comprehensive Data Integration**: Centralized management of customer, sales, inventory, and financial data
+- **Real-time Analysis**: Immediate analysis and insights based on the latest data
+- **Predictive Analytics**: AI-based future predictions and scenario analysis
+
+### User Experience
+
+- **Modern Dashboard**: Intuitive UI for a bird's-eye view of the entire business
+- **Customizable**: Customization of display items according to needs
+- **Responsive Design**: UI optimized for all devices
+
+## 📄 Related Documents
+
+- [Installation Guide](./docs/INSTALLATION_GUIDE.md)
+- [Project Completion Report](./docs/PROJECT_COMPLETION_REPORT.md)
+- [Final System Test Results](./docs/FINAL_SYSTEM_TEST.md)
 
 ## 🆘 Troubleshooting
 
 ### Common Issues
 
-**Q: Application won't start**
-- Verify Node.js 18+ is installed
-- Check if Ollama service is running (`ollama serve`)
+**Q: Business AI Agent doesn't provide appropriate answers**
+- Ensure sufficient business data is registered
+- Try with more specific queries
 
-**Q: Model download fails**
-- Check internet connection
-- Verify disk space (models require several GB)
+**Q: Data not displaying**
+- Verify API endpoints are functioning properly
+- Check database connection
 
-**Q: Chat doesn't respond**
-- Confirm Ollama service is running
-- Verify selected model is properly downloaded
+**Q: Degraded performance**
+- Check system resources with real-time monitoring
+- Terminate unnecessary background processes
 
-### Support
+## 🛣️ Roadmap
 
-If issues persist, please create an Issue with the following information:
-- OS & version
-- Error messages
-- Steps to reproduce
+Features planned for future implementation:
+
+- 📱 Mobile app offering
+- 🔗 Enhanced external system integrations
+- 🌐 Multi-language support
+- 🤖 Introduction of advanced AI prediction models
+- 📊 Custom analytics dashboard creation
 
 ## 🤝 Contributing
 
-Pull requests and issue reports are welcome!
+Help improve the Business Management AI Platform!
 
 1. Fork this repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
+2. Create a feature branch (`git checkout -b feature/new-analytics`)
+3. Commit your changes (`git commit -m 'Add advanced analytics component'`)
+4. Push to the branch (`git push origin feature/new-analytics`)
 5. Create a Pull Request
 
 ## 📄 License
@@ -165,8 +191,8 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 ## 👥 Development Team
 
-**Local LLM Chat Team**
+**AI Business Management Team**
 
 ---
 
-⭐ If this project helped you, please consider giving it a star!
+⭐ If this project has helped improve your business operations, please consider giving it a star!

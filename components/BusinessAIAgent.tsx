@@ -59,17 +59,25 @@ export default function BusinessAIAgent({
   onExternalQueryProcessed
 }: BusinessAIAgentProps) {
   const [isExpanded, setIsExpanded] = useState(false)
-  const [endpoint] = useState("http://localhost:11434/v1")
-  const [modelName] = useState("llama3.2")
   const [currentInteractionId, setCurrentInteractionId] = useState<string | null>(null)
   const [showFeedback, setShowFeedback] = useState<{[key: string]: boolean}>({})
   const [learningStats, setLearningStats] = useState(aiLearningEngine.getAnalytics())
+  
+  // AIの設定（デフォルトはOpenAI、環境変数からAPI設定を取得）
+  const [aiSettings] = useState({
+    provider: process.env.NEXT_PUBLIC_AI_PROVIDER || 'openai',
+    apiKey: process.env.NEXT_PUBLIC_AI_API_KEY,
+    modelId: process.env.NEXT_PUBLIC_AI_MODEL || 'gpt-4o',
+    apiEndpoint: process.env.NEXT_PUBLIC_AI_ENDPOINT
+  })
 
   const { messages, input, handleInputChange, handleSubmit, isLoading, setInput } = useChat({
     api: '/api/business-agent',
     body: {
-      endpoint,
-      modelName
+      provider: aiSettings.provider,
+      apiKey: aiSettings.apiKey,
+      modelId: aiSettings.modelId,
+      apiEndpoint: aiSettings.apiEndpoint
     },
     onError: (error) => {
       console.error('AIエージェントエラー:', error)

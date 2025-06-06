@@ -1,0 +1,54 @@
+{
+  "sales": [
+    {
+      "id": "S2023-06-001",
+      "customerId": "C1001",
+      "productId": "P001",
+      "quantity": 1,
+      "totalAmount": 330000,
+      "date": "2025-06-10",
+      "paymentMethod": "bank_transfer",
+      "status": "completed"
+    },
+    {
+      "id": "S2023-06-002",
+      "customerId": "C1002",
+      "productId": "P002",
+      "quantity": 1,
+      "totalAmount": 275000,
+      "date": "2025-06-15",
+      "paymentMethod": "credit_card",
+      "status": "completed"
+    },
+    {
+      "id": "S2023-06-003",
+      "customerId": "C1003",
+      "productId": "P003",
+      "quantity": 1,
+      "totalAmount": 550000,
+      "date": "2025-06-20",
+      "paymentMethod": "bank_transfer",
+      "status": "completed"
+    },
+    {
+      "id": "S2023-05-001",
+      "customerId": "C1001",
+      "productId": "P004",
+      "quantity": 1,
+      "totalAmount": 165000,
+      "date": "2025-05-25",
+      "paymentMethod": "credit_card",
+      "status": "completed"
+    },
+    {
+      "id": "S2023-05-002",
+      "customerId": "C1004",
+      "productId": "P005",
+      "quantity": 1,
+      "totalAmount": 440000,
+      "date": "2025-05-18",
+      "paymentMethod": "bank_transfer",
+      "status": "completed"
+    }
+  ]
+}

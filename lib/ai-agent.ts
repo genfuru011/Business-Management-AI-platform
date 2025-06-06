@@ -40,15 +40,24 @@ export enum AgentCapability {
 }
 
 export class BusinessAIAgent {
-  private ollamaConfig: {
-    baseURL: string
+  private aiConfig: {
+    provider: string
+    apiKey?: string
     modelId: string
+    apiEndpoint?: string
   }
 
-  constructor(endpoint?: string, modelName?: string) {
-    this.ollamaConfig = {
-      baseURL: endpoint || "http://localhost:11434/v1",
-      modelId: modelName || "llama3.2"
+  constructor(config?: {
+    provider?: string,
+    apiKey?: string,
+    modelId?: string,
+    apiEndpoint?: string
+  }) {
+    this.aiConfig = {
+      provider: config?.provider || "openai",
+      apiKey: config?.apiKey || process.env.AI_API_KEY || "",
+      modelId: config?.modelId || "gpt-4o",
+      apiEndpoint: config?.apiEndpoint
     }
   }
 
@@ -163,13 +172,14 @@ export class BusinessAIAgent {
   async generateResponse(context: AgentContext) {
     const systemPrompt = this.buildSystemPrompt(context)
     
+    // プロバイダー設定に基づいてLLMを初期化
     const llmProvider = createOpenAI({
-      baseURL: this.ollamaConfig.baseURL,
-      apiKey: "dummy"
+      baseURL: this.aiConfig.apiEndpoint,
+      apiKey: this.aiConfig.apiKey || "dummy"
     })
 
     return streamText({
-      model: llmProvider(this.ollamaConfig.modelId),
+      model: llmProvider(this.aiConfig.modelId),
       messages: [
         { role: "system", content: systemPrompt },
         { role: "user", content: context.userQuery }
@@ -469,10 +479,14 @@ export class BusinessInsightEngine {
  */
 export async function processBusinessQuery(
   query: string,
-  endpoint?: string,
-  modelName?: string
+  config?: {
+    provider?: string,
+    apiKey?: string,
+    modelId?: string,
+    apiEndpoint?: string
+  }
 ) {
-  const agent = new BusinessAIAgent(endpoint, modelName)
+  const agent = new BusinessAIAgent(config)
   
   // 意図を分析
   const intent = await agent.analyzeIntent(query)

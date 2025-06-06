@@ -1,9 +1,15 @@
 import mongoose from 'mongoose'
+import fs from 'fs'
+import path from 'path'
 
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/business-management'
+const USE_JSON_FALLBACK = process.env.USE_JSON_FALLBACK === 'true'
 
-if (!MONGODB_URI) {
-  throw new Error('Please define the MONGODB_URI environment variable inside .env.local')
+// JSONデータディレクトリ
+const DATA_DIR = path.join(process.cwd(), 'data')
+
+if (!MONGODB_URI && !USE_JSON_FALLBACK) {
+  throw new Error('Please define the MONGODB_URI environment variable inside .env.local or set USE_JSON_FALLBACK=true')
 }
 
 /**
@@ -19,6 +25,21 @@ let cached = global.mongoose
 
 if (!cached) {
   cached = global.mongoose = { conn: null, promise: null }
+}
+
+// JSONファイルからデータを読み込む関数
+export function getJsonData(filename: string) {
+  try {
+    const filePath = path.join(DATA_DIR, filename)
+    if (fs.existsSync(filePath)) {
+      const rawData = fs.readFileSync(filePath, 'utf8')
+      return JSON.parse(rawData)
+    }
+    return null
+  } catch (error) {
+    console.error(`Error reading JSON data from ${filename}:`, error)
+    return null
+  }
 }
 
 async function dbConnect() {

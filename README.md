@@ -1,9 +1,9 @@
-# 🤖 Local LLM Chat
+# 🚀 AI統合ビジネス管理プラットフォーム
 
-**プライベート・セキュアなローカルAIチャットアプリケーション**
+**AIを活用した次世代ビジネス分析・管理システム**
 
-![Version](https://img.shields.io/badge/version-2.0.0-blue.svg)
-![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows-lightgrey.svg)
+![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)
+![Platform](https://img.shields.io/badge/platform-Web-lightgrey.svg)
 ![Next.js](https://img.shields.io/badge/Next.js-15.0.0-black.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 
@@ -11,70 +11,64 @@
 
 ## 🌟 概要
 
-Local LLM Chatは、完全にローカル環境で動作するAIチャットアプリケーションです。インターネット接続不要で、プライベートかつセキュアにAIとの対話を楽しめます。
+AI統合ビジネス管理プラットフォームは、AIを活用してビジネスデータの分析、意思決定支援、業務効率化を実現するオールインワンソリューションです。データドリブンな経営判断をリアルタイムでサポートします。
 
 ### ✨ 主な特徴
 
-- 🔒 **プライバシー重視** - データはすべてローカルに保存
-- 🚀 **簡単インストール** - ワンクリックでOllamaとNode.jsを自動インストール
-- 🎨 **モダンUI** - 美しく直感的なユーザーインターフェース
-- ⚡ **高速応答** - ローカル処理によるリアルタイム対話
-- 🔄 **モデル管理** - AIモデルの簡単なダウンロード・切り替え
-- 🌐 **クロスプラットフォーム** - macOS・Windows対応
+- 🧠 **AIビジネスエージェント** - 自然言語でビジネス分析・提案を実現
+- 📊 **リアルタイム監視** - ビジネス指標をリアルタイムで可視化
+- 📈 **パフォーマンス分析** - システム・業務パフォーマンスの最適化提案
+- 📝 **自動レポート生成** - 包括的なビジネスレポートを自動作成
+- 📱 **モダンUI/UX** - 直感的で使いやすいインターフェース
+- 🔄 **AI学習システム** - ユーザーフィードバックから継続的に改善
 
-## 📦 インストール
+## 📦 システム要件
 
-### macOS（推奨）
+## 🚀 主要機能
 
-1. [Local-LLM-Chat-Installer.dmg](./dist/Local-LLM-Chat-Installer.dmg)をダウンロード
-2. DMGファイルを開いてApplicationsフォルダにドラッグ
-3. アプリケーションを起動（初回起動時に自動セットアップ）
+### 🧠 AIビジネスエージェント
 
-### Windows
+- **自然言語クエリ処理**: ビジネスに関する質問を自然な言葉で
+- **意図分析**: クエリから適切なビジネス機能を特定
+- **データドリブン回答**: 実際のビジネスデータに基づいた分析・提案
+- **継続的学習**: ユーザーフィードバックによる精度向上
 
-1. [Local-LLM-Chat-Windows-Portable.zip](./dist/Local-LLM-Chat-Windows-Portable.zip)をダウンロード
-2. 任意の場所に解凍
-3. `Local LLM Chat.exe`を実行
-4. 詳細手順は[Windowsセットアップガイド](./dist/WINDOWS-SETUP-GUIDE.md)を参照
+### 📊 ビジネスインサイト
 
-## 🚀 使用方法
+- **売上分析**: トレンド分析と売上予測
+- **顧客管理**: 顧客動向と満足度分析
+- **在庫最適化**: 在庫状況の分析と補充提案
+- **財務健全性**: 収益性分析と改善提案
 
-### 初回起動
+### 📈 パフォーマンスモニタリング
 
-1. アプリケーションを起動すると自動的にブラウザが開きます
-2. 必要な依存関係（Ollama・Node.js）が自動でインストールされます
-3. 設定パネルからAIモデルを選択・ダウンロード
-4. チャットを開始！
+- **リアルタイム指標**: 主要ビジネス指標のリアルタイム表示
+- **システム監視**: CPU/メモリ/ディスク使用率の監視
+- **最適化提案**: パフォーマンス改善のための具体的提案
+- **アラート機能**: 重要な変化の通知
 
-### AIモデルの管理
+### 📝 レポート生成
 
-- **モデル選択**: ドロップダウンメニューから利用可能なモデルを選択
-- **新規モデル**: 「カスタムモデル」オプションでモデル名を入力
-- **ダウンロード**: 進行状況バーでダウンロード状況を確認
-- **削除**: 不要なモデルを簡単に削除
+- **包括的レポート**: 全ビジネス領域を網羅した総合レポート
+- **セクション別分析**: 各部門・機能別の詳細分析
+- **インサイト生成**: データからの重要な洞察抽出
+- **エクスポート機能**: 様々なフォーマットでのレポート出力
 
-### サポートされているモデル
+## 🛠️ 開発者向け情報
 
-- **Gemma2**: Google製の高性能モデル
-- **Llama3**: Meta製の最新モデル
-- **Mistral**: 軽量で高速なモデル
-- **CodeLlama**: プログラミング特化モデル
-- その他のOllama対応モデル
+### 技術スタック
 
-## 🛠️ 開発者向け
-
-### 前提条件
-
-- Node.js 18以上
-- npm または yarn
-- Ollama
+- **フロントエンド**: Next.js, React, TailwindCSS
+- **AI処理**: Ollama, AI SDK
+- **データ処理**: Custom Business Analytics Engines
+- **UI/UX**: Lucide Icons, Shadcn UI Components
 
 ### セットアップ
 
 ```bash
 # リポジトリをクローン
-git clone <repository-url>
-cd local-llm-chat
+git clone https://github.com/your-username/Business-Management-AI-platform.git
+cd Business-Management-AI-platform
 
 # 依存関係をインストール
 npm install
@@ -83,80 +77,112 @@ npm install
 npm run dev
 ```
 
-### ビルド
-
-```bash
-# 本番用ビルド
-npm run build
-
-# macOS用インストーラー作成
-./create-installer.sh
-
-# Windows用ポータブル版作成
-./create-windows-installer.sh
-```
-
 ### プロジェクト構造
 
 ```
-📦 local-llm-chat/
-├── app/                    # Next.jsアプリケーション
-│   ├── api/               # APIエンドポイント
-│   ├── page.tsx           # メインチャットUI
-│   └── layout.tsx         # アプリレイアウト
-├── components/            # UIコンポーネント
-├── lib/                   # ユーティリティ関数
-├── dist/                  # 配布用ファイル
-└── build/                 # ビルド成果物
+/
+├── app/                      # Next.jsアプリケーションのメインディレクトリ
+│   ├── api/                  # APIエンドポイント
+│   │   ├── business-agent/   # ビジネスAIエージェントAPI
+│   │   ├── business-report/  # レポート生成API
+│   │   ├── analytics/        # 分析データAPI
+│   │   └── ...               # その他のAPI
+│   ├── dashboard/            # ダッシュボードページ
+│   ├── customers/            # 顧客管理ページ
+│   ├── finances/             # 財務管理ページ
+│   └── ...                   # その他のページ
+├── components/               # Reactコンポーネント
+│   ├── BusinessAIAgent.tsx   # AIエージェントコンポーネント
+│   ├── AIQuickActions.tsx    # クイックアクションコンポーネント
+│   ├── RealTimeBusinessMonitor.tsx # リアルタイムモニター
+│   └── ui/                   # UIコンポーネント
+├── data/                     # サンプル・デモデータ
+│   ├── customers.json        # 顧客データ
+│   ├── products.json         # 商品データ
+│   ├── sales.json            # 売上データ
+│   └── finances.json         # 財務データ
+├── docs/                     # プロジェクトドキュメント
+│   ├── INSTALLATION_GUIDE.md # インストールガイド
+│   ├── FINAL_SYSTEM_TEST.md  # システムテスト結果
+│   └── ...                   # その他のドキュメント
+├── lib/                      # ユーティリティと共通機能
+│   ├── ai-agent.ts           # AIエージェントフレームワーク
+│   ├── ai-learning.ts        # AI学習システム
+│   ├── business-report.ts    # レポート生成システム
+│   └── performance-monitor.ts # パフォーマンス監視
+├── public/                   # 静的ファイル
+│   └── images/               # 画像ファイル
+├── tests/                    # テストファイル
+└── docs/                     # ドキュメント
 ```
 
 ## 🔧 技術スタック
 
 - **フロントエンド**: Next.js 15.0.0, React, TypeScript
 - **スタイリング**: Tailwind CSS, shadcn/ui
-- **デスクトップ**: Electron
-- **AI**: Ollama, Vercel AI SDK
-- **ビルド**: electron-builder
+- **AI処理**: Ollama, Vercel AI SDK
+- **データベース**: MongoDB, JSONデータ
+- **データ処理**: カスタムビジネス分析エンジン
+- **UIコンポーネント**: Lucide Icons, shadcn/ui
 
-## 📚 ドキュメント
+## 📊 システムの特長
 
-- [インストールガイド](./INSTALLATION_GUIDE.md)
-- [自動インストールガイド](./AUTO_INSTALL_GUIDE.md)
-- [Windowsセットアップガイド](./dist/WINDOWS-SETUP-GUIDE.md)
-- [インストーラー状況](./INSTALLER_STATUS.md)
-- [プロジェクト整理レポート](./CLEANUP_REPORT.md)
+### AIエージェントの進化
+
+本システムは、GitHub Copilotのようなコーディングアシスタントの概念をビジネス管理に応用。意図認識、コンテキスト理解、データアクセス、そして継続的学習を統合した次世代のビジネスアシスタントを実現しています。
+
+### データドリブン分析
+
+- **包括的データ統合**: 顧客、販売、在庫、財務データの一元管理
+- **リアルタイム分析**: 最新データに基づいた即時分析と洞察
+- **予測分析**: AIによる将来予測とシナリオ分析
+
+### ユーザーエクスペリエンス
+
+- **モダンダッシュボード**: 直感的なUIでビジネス全体を俯瞰
+- **カスタマイズ可能**: ニーズに合わせた表示項目のカスタマイズ
+- **レスポンシブデザイン**: あらゆるデバイスに最適化されたUI
+
+## 📄 関連ドキュメント
+
+- [インストールガイド](./docs/INSTALLATION_GUIDE.md)
+- [プロジェクト完成レポート](./docs/PROJECT_COMPLETION_REPORT.md)
+- [最終システムテスト結果](./docs/FINAL_SYSTEM_TEST.md)
 
 ## 🆘 トラブルシューティング
 
-### よくある問題
+### 一般的な問題
 
-**Q: アプリが起動しない**
-- Node.js 18以上がインストールされているか確認
-- Ollamaサービスが起動しているか確認（`ollama serve`）
+**Q: ビジネスAIエージェントが適切な回答を返さない**
+- 十分なビジネスデータが登録されていることを確認
+- より具体的なクエリで試してみる
 
-**Q: モデルダウンロードが失敗する**
-- インターネット接続を確認
-- ディスク容量を確認（モデルは数GB必要）
+**Q: データが表示されない**
+- APIエンドポイントが正常に動作していることを確認
+- データベース接続を確認
 
-**Q: チャットが応答しない**
-- Ollamaサービスが動作中か確認
-- 選択したモデルが正しくダウンロードされているか確認
+**Q: パフォーマンスが低下している**
+- リアルタイム監視でシステムリソースを確認
+- 不要なバックグラウンドプロセスを終了
 
-### サポート
+## 🛣️ ロードマップ
 
-問題が解決しない場合は、以下の情報と共にIssueを作成してください：
-- OS・バージョン
-- エラーメッセージ
-- 再現手順
+今後実装予定の機能:
+
+- 📱 モバイルアプリの提供
+- 🔗 外部システム統合の拡充
+- 🌐 多言語対応
+- 🤖 高度なAI予測モデルの導入
+- 📊 カスタム分析ダッシュボードの作成
 
 ## 🤝 コントリビューション
 
-プルリクエストやイシューの報告を歓迎します！
+ビジネス管理AIプラットフォームの改善にご協力ください！
 
 1. このリポジトリをフォーク
-2. フィーチャーブランチを作成 (`git checkout -b feature/amazing-feature`)
-3. 変更をコミット (`git commit -m 'Add amazing feature'`)
-4. ブランチにプッシュ (`git push origin feature/amazing-feature`)
+2. フィーチャーブランチを作成 (`git checkout -b feature/new-analytics`)
+3. 変更をコミット (`git commit -m 'Add advanced analytics component'`)
+4. ブランチにプッシュ (`git push origin feature/new-analytics`)
 5. プルリクエストを作成
 
 ## 📄 ライセンス
@@ -165,8 +191,8 @@ npm run build
 
 ## 👥 開発チーム
 
-**Local LLM Chat Team**
+**AI Business Management Team**
 
 ---
 
-⭐ このプロジェクトが役に立った場合は、ぜひスターを付けてください！
+⭐ このプロジェクトが経営改善に役立った場合は、ぜひスターを付けてください！

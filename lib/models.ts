@@ -1,4 +1,24 @@
 import mongoose from 'mongoose'
+import fs from 'fs'
+import path from 'path'
+
+// データファイルパス
+const DATA_DIR = path.join(process.cwd(), 'data')
+
+// JSONデータ読み込み関数
+export function loadJsonData(filename: string) {
+  try {
+    const filePath = path.join(DATA_DIR, filename)
+    if (fs.existsSync(filePath)) {
+      const rawData = fs.readFileSync(filePath, 'utf8')
+      return JSON.parse(rawData)
+    }
+    return null
+  } catch (error) {
+    console.error(`Error loading JSON data from ${filename}:`, error)
+    return null
+  }
+}
 
 // 顧客モデル
 const CustomerSchema = new mongoose.Schema({
