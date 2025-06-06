@@ -9,7 +9,9 @@ import {
   FileText, 
   DollarSign, 
   MessageSquare,
-  BarChart3 
+  BarChart3,
+  Bot,
+  Sparkles
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -35,6 +37,18 @@ export default function Navigation() {
         <p className="text-gray-400 text-sm mt-1">
           AI統合プラットフォーム
         </p>
+        
+        {/* AIエージェント機能強調 */}
+        <div className="mt-4 p-3 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg">
+          <div className="flex items-center space-x-2">
+            <Bot className="h-4 w-4 text-white" />
+            <Sparkles className="h-3 w-3 text-yellow-300" />
+            <span className="text-sm font-medium text-white">AI Copilot</span>
+          </div>
+          <p className="text-xs text-blue-100 mt-1">
+            ビジネス統合支援
+          </p>
+        </div>
       </div>
       
       <ul className="space-y-2">
