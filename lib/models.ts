@@ -1,0 +1,287 @@
+import mongoose from 'mongoose'
+
+// 顧客モデル
+const CustomerSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+    trim: true,
+    lowercase: true
+  },
+  phone: {
+    type: String,
+    trim: true
+  },
+  address: {
+    street: String,
+    city: String,
+    state: String,
+    zipCode: String,
+    country: { type: String, default: 'Japan' }
+  },
+  company: {
+    type: String,
+    trim: true
+  },
+  notes: {
+    type: String,
+    trim: true
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now
+  },
+  updatedAt: {
+    type: Date,
+    default: Date.now
+  }
+}, {
+  timestamps: true
+})
+
+// 商品モデル
+const ProductSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  description: {
+    type: String,
+    trim: true
+  },
+  sku: {
+    type: String,
+    required: true,
+    unique: true,
+    trim: true
+  },
+  price: {
+    type: Number,
+    required: true,
+    min: 0
+  },
+  cost: {
+    type: Number,
+    min: 0
+  },
+  stock: {
+    type: Number,
+    required: true,
+    min: 0,
+    default: 0
+  },
+  category: {
+    type: String,
+    trim: true
+  },
+  unit: {
+    type: String,
+    default: '個',
+    trim: true
+  },
+  isActive: {
+    type: Boolean,
+    default: true
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now
+  },
+  updatedAt: {
+    type: Date,
+    default: Date.now
+  }
+}, {
+  timestamps: true
+})
+
+// 請求書モデル
+const InvoiceSchema = new mongoose.Schema({
+  invoiceNumber: {
+    type: String,
+    required: true,
+    unique: true
+  },
+  customer: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Customer',
+    required: true
+  },
+  items: [{
+    product: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Product'
+    },
+    name: String,
+    description: String,
+    quantity: {
+      type: Number,
+      required: true,
+      min: 1
+    },
+    price: {
+      type: Number,
+      required: true,
+      min: 0
+    },
+    total: {
+      type: Number,
+      required: true,
+      min: 0
+    }
+  }],
+  subtotal: {
+    type: Number,
+    required: true,
+    min: 0
+  },
+  tax: {
+    type: Number,
+    default: 0,
+    min: 0
+  },
+  taxRate: {
+    type: Number,
+    default: 0.1, // 10%消費税
+    min: 0,
+    max: 1
+  },
+  total: {
+    type: Number,
+    required: true,
+    min: 0
+  },
+  status: {
+    type: String,
+    enum: ['draft', 'sent', 'paid', 'overdue', 'cancelled'],
+    default: 'draft'
+  },
+  issueDate: {
+    type: Date,
+    default: Date.now
+  },
+  dueDate: {
+    type: Date,
+    required: true
+  },
+  paidDate: {
+    type: Date
+  },
+  notes: {
+    type: String,
+    trim: true
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now
+  },
+  updatedAt: {
+    type: Date,
+    default: Date.now
+  }
+}, {
+  timestamps: true
+})
+
+// 売上記録モデル
+const SaleSchema = new mongoose.Schema({
+  invoice: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Invoice',
+    required: true
+  },
+  customer: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Customer',
+    required: true
+  },
+  amount: {
+    type: Number,
+    required: true,
+    min: 0
+  },
+  paymentMethod: {
+    type: String,
+    enum: ['cash', 'credit_card', 'bank_transfer', 'paypal', 'other'],
+    default: 'cash'
+  },
+  saleDate: {
+    type: Date,
+    default: Date.now
+  },
+  notes: {
+    type: String,
+    trim: true
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now
+  }
+}, {
+  timestamps: true
+})
+
+// 支出記録モデル
+const ExpenseSchema = new mongoose.Schema({
+  description: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  amount: {
+    type: Number,
+    required: true,
+    min: 0
+  },
+  category: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  expenseDate: {
+    type: Date,
+    default: Date.now
+  },
+  paymentMethod: {
+    type: String,
+    enum: ['cash', 'credit_card', 'bank_transfer', 'other'],
+    default: 'cash'
+  },
+  receipt: {
+    type: String, // ファイルパスまたはURL
+    trim: true
+  },
+  notes: {
+    type: String,
+    trim: true
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now
+  }
+}, {
+  timestamps: true
+})
+
+// インデックスの設定
+CustomerSchema.index({ email: 1 })
+ProductSchema.index({ sku: 1 })
+ProductSchema.index({ name: 1, category: 1 })
+InvoiceSchema.index({ invoiceNumber: 1 })
+InvoiceSchema.index({ customer: 1, issueDate: -1 })
+SaleSchema.index({ saleDate: -1 })
+ExpenseSchema.index({ expenseDate: -1, category: 1 })
+
+// モデルのエクスポート
+export const Customer = mongoose.models.Customer || mongoose.model('Customer', CustomerSchema)
+export const Product = mongoose.models.Product || mongoose.model('Product', ProductSchema)
+export const Invoice = mongoose.models.Invoice || mongoose.model('Invoice', InvoiceSchema)
+export const Sale = mongoose.models.Sale || mongoose.model('Sale', SaleSchema)
+export const Expense = mongoose.models.Expense || mongoose.model('Expense', ExpenseSchema)
