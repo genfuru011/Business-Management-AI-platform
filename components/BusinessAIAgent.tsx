@@ -63,27 +63,13 @@ export default function BusinessAIAgent({
   const [showFeedback, setShowFeedback] = useState<{[key: string]: boolean}>({})
   const [learningStats, setLearningStats] = useState(aiLearningEngine.getAnalytics())
   
-  // AIの設定（環境変数からOllama設定を取得）
+  // AIの設定（デフォルトはOpenAI、環境変数からAPI設定を取得）
   const [aiSettings] = useState({
-    provider: process.env.NEXT_PUBLIC_AI_PROVIDER || 'ollama',
-    apiKey: process.env.NEXT_PUBLIC_AI_API_KEY || 'ollama-local-key-123',
-    modelId: process.env.NEXT_PUBLIC_AI_MODEL || 'llama3.2',
-    apiEndpoint: process.env.NEXT_PUBLIC_AI_ENDPOINT || 'http://localhost:11435/v1'
+    provider: process.env.NEXT_PUBLIC_AI_PROVIDER || 'openai',
+    apiKey: process.env.NEXT_PUBLIC_AI_API_KEY,
+    modelId: process.env.NEXT_PUBLIC_AI_MODEL || 'gpt-4o',
+    apiEndpoint: process.env.NEXT_PUBLIC_AI_ENDPOINT
   })
-
-  // デバッグ: 環境変数の値を確認
-  useEffect(() => {
-    console.log('🔧 AI Settings Debug:', {
-      provider: aiSettings.provider,
-      modelId: aiSettings.modelId,
-      apiEndpoint: aiSettings.apiEndpoint,
-      envVars: {
-        NEXT_PUBLIC_AI_PROVIDER: process.env.NEXT_PUBLIC_AI_PROVIDER,
-        NEXT_PUBLIC_AI_MODEL: process.env.NEXT_PUBLIC_AI_MODEL,
-        NEXT_PUBLIC_AI_ENDPOINT: process.env.NEXT_PUBLIC_AI_ENDPOINT
-      }
-    })
-  }, [])
 
   const { messages, input, handleInputChange, handleSubmit, isLoading, setInput } = useChat({
     api: '/api/business-agent',
@@ -94,10 +80,9 @@ export default function BusinessAIAgent({
       apiEndpoint: aiSettings.apiEndpoint
     },
     onError: (error) => {
-      console.error('❌ AIエージェントエラー:', error)
+      console.error('AIエージェントエラー:', error)
     },
     onFinish: (message) => {
-      console.log('✅ AI回答完了:', { messageLength: message.content.length })
       // AIの応答が完了したら学習エンジンに記録
       if (input.trim()) {
         const category = categorizeQuery(input)
@@ -150,18 +135,7 @@ export default function BusinessAIAgent({
   }, [])
 
   const handleSuggestedQuery = (query: string) => {
-    console.log('📝 Suggested Query Triggered:', query)
-    setInput(query)
-    // 少し遅延してからsubmitする
-    setTimeout(() => {
-      const event = new Event('submit', { bubbles: true, cancelable: true })
-      const form = document.createElement('form')
-      Object.defineProperty(event, 'target', { value: form })
-      Object.defineProperty(event, 'preventDefault', { value: () => {} })
-      
-      console.log('🚀 About to submit suggested query:', query)
-      handleSubmit(event as any)
-    }, 100)
+    handleInputChange({ target: { value: query } } as any)
   }
 
   const compactView = (
@@ -336,10 +310,7 @@ export default function BusinessAIAgent({
 
         {/* 入力フォーム */}
         <div className="border-t p-4">
-          <form onSubmit={(e) => {
-            console.log('📤 Form submitted with input:', input)
-            handleSubmit(e)
-          }} className="flex space-x-2">
+          <form onSubmit={handleSubmit} className="flex space-x-2">
             <Input
               value={input}
               onChange={handleInputChange}

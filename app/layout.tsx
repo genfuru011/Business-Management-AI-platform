@@ -1,10 +1,10 @@
 import type React from "react"
 import type { Metadata } from "next"
-import { Inter } from "next/font/google"
+// import { Inter } from "next/font/google"
 import "./globals.css"
 import Navigation from "@/components/Navigation"
 
-const inter = Inter({ subsets: ["latin"] })
+// const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
   title: "Business Management Platform",
@@ -18,7 +18,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ja">
-      <body className={inter.className}>
+      <body className="font-sans">
         <div className="flex min-h-screen">
           <Navigation />
           <main className="flex-1 bg-gray-50">
