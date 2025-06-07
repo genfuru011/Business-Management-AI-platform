@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI エージェント テスト</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        .container { background: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0; }
+        .response { background: white; padding: 15px; margin: 10px 0; border-radius: 5px; white-space: pre-wrap; }
+        .loading { color: #666; }
+        .error { color: red; }
+        .success { color: green; }
+        input[type="text"] { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 4px; }
+        button { background: #007cba; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background: #005a87; }
+        button:disabled { background: #ccc; cursor: not-allowed; }
+    </style>
+</head>
+<body>
+    <h1>🤖 AIエージェント統合テスト</h1>
+    
+    <div class="container">
+        <h2>システム状態</h2>
+        <div id="systemStatus">チェック中...</div>
+    </div>
+
+    <div class="container">
+        <h2>AIエージェント テスト</h2>
+        <input type="text" id="queryInput" placeholder="質問を入力してください（例: 顧客データの概要を教えてください）" value="顧客データの概要を教えてください">
+        <button onclick="testAIAgent()" id="testButton">テスト実行</button>
+        <div id="aiResponse" class="response"></div>
+    </div>
+
+    <script>
+        async function checkSystemStatus() {
+            const statusEl = document.getElementById('systemStatus');
+            statusEl.innerHTML = 'システム状態をチェック中...';
+            
+            try {
+                // Ollama プロキシ確認
+                const ollamaResp = await fetch('/api/ollama-models');
+                const ollamaStatus = ollamaResp.ok ? '✅ 正常' : '❌ エラー';
+                
+                // 顧客データ確認
+                const customersResp = await fetch('/api/customers');
+                const customersStatus = customersResp.ok ? '✅ 正常' : '❌ エラー';
+                
+                // 分析データ確認
+                const analyticsResp = await fetch('/api/analytics?period=month');
+                const analyticsStatus = analyticsResp.ok ? '✅ 正常' : '❌ エラー';
+                
+                statusEl.innerHTML = `
+                    <div>Ollama プロキシ: ${ollamaStatus}</div>
+                    <div>顧客データAPI: ${customersStatus}</div>
+                    <div>分析API: ${analyticsStatus}</div>
+                `;
+                
+            } catch (error) {
+                statusEl.innerHTML = `<div class="error">エラー: ${error.message}</div>`;
+            }
+        }
+
+        async function testAIAgent() {
+            const queryInput = document.getElementById('queryInput');
+            const responseEl = document.getElementById('aiResponse');
+            const testButton = document.getElementById('testButton');
+            
+            const query = queryInput.value.trim();
+            if (!query) {
+                alert('質問を入力してください');
+                return;
+            }
+            
+            testButton.disabled = true;
+            responseEl.innerHTML = '<div class="loading">AI応答を生成中...</div>';
+            
+            try {
+                const response = await fetch('/api/business-agent', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        messages: [
+                            { role: 'user', content: query }
+                        ],
+                        provider: 'ollama',
+                        apiKey: 'ollama-local-key-123',
+                        modelId: 'llama3.2',
+                        apiEndpoint: 'http://localhost:11435/v1'
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(`API エラー: ${errorData.error || response.status}`);
+                }
+
+                responseEl.innerHTML = '<div class="loading">レスポンスを受信中...</div>';
+                
+                // ストリーミングレスポンスを読み取り
+                const reader = response.body.getReader();
+                let accumulatedResponse = '';
+                
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+                    
+                    const chunk = new TextDecoder().decode(value);
+                    accumulatedResponse += chunk;
+                    responseEl.innerHTML = `<div class="success">AI応答:</div><div>${accumulatedResponse}</div>`;
+                }
+                
+                if (accumulatedResponse) {
+                    responseEl.innerHTML = `<div class="success">✅ AI応答取得成功</div><div>${accumulatedResponse}</div>`;
+                } else {
+                    responseEl.innerHTML = '<div class="error">⚠️ 空の応答を受信</div>';
+                }
+                
+            } catch (error) {
+                console.error('AI テストエラー:', error);
+                responseEl.innerHTML = `<div class="error">❌ エラー: ${error.message}</div>`;
+            } finally {
+                testButton.disabled = false;
+            }
+        }
+
+        // ページ読み込み時にシステム状態をチェック
+        window.onload = checkSystemStatus;
+    </script>
+</body>
+</html>

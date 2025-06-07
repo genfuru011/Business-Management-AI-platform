@@ -1,54 +1,68 @@
-{
-  "sales": [
-    {
-      "id": "S2023-06-001",
-      "customerId": "C1001",
-      "productId": "P001",
-      "quantity": 1,
-      "totalAmount": 330000,
-      "date": "2025-06-10",
-      "paymentMethod": "bank_transfer",
-      "status": "completed"
-    },
-    {
-      "id": "S2023-06-002",
-      "customerId": "C1002",
-      "productId": "P002",
-      "quantity": 1,
-      "totalAmount": 275000,
-      "date": "2025-06-15",
-      "paymentMethod": "credit_card",
-      "status": "completed"
-    },
-    {
-      "id": "S2023-06-003",
-      "customerId": "C1003",
-      "productId": "P003",
-      "quantity": 1,
-      "totalAmount": 550000,
-      "date": "2025-06-20",
-      "paymentMethod": "bank_transfer",
-      "status": "completed"
-    },
-    {
-      "id": "S2023-05-001",
-      "customerId": "C1001",
-      "productId": "P004",
-      "quantity": 1,
-      "totalAmount": 165000,
-      "date": "2025-05-25",
-      "paymentMethod": "credit_card",
-      "status": "completed"
-    },
-    {
-      "id": "S2023-05-002",
-      "customerId": "C1004",
-      "productId": "P005",
-      "quantity": 1,
-      "totalAmount": 440000,
-      "date": "2025-05-18",
-      "paymentMethod": "bank_transfer",
-      "status": "completed"
-    }
-  ]
-}
+[
+  {
+    "_id": "S001",
+    "customerId": "C001",
+    "productId": "P001",
+    "quantity": 1,
+    "amount": 330000,
+    "saleDate": "2024-12-10T10:30:00Z",
+    "paymentMethod": "bank_transfer",
+    "status": "completed",
+    "notes": "大型案件の一部"
+  },
+  {
+    "_id": "S002",
+    "customerId": "C002",
+    "productId": "P002",
+    "quantity": 1,
+    "amount": 275000,
+    "saleDate": "2024-12-15T14:20:00Z",
+    "paymentMethod": "credit_card",
+    "status": "completed",
+    "notes": "デザインコンサル料"
+  },
+  {
+    "_id": "S003",
+    "customerId": "C003",
+    "productId": "P003",
+    "quantity": 1,
+    "amount": 550000,
+    "saleDate": "2024-12-20T16:45:00Z",
+    "paymentMethod": "bank_transfer",
+    "status": "completed",
+    "notes": "システム開発案件"
+  },
+  {
+    "_id": "S004",
+    "customerId": "C001",
+    "productId": "P004",
+    "quantity": 1,
+    "amount": 165000,
+    "saleDate": "2024-11-25T09:15:00Z",
+    "paymentMethod": "credit_card",
+    "status": "completed",
+    "notes": "追加サービス"
+  },
+  {
+    "_id": "S005",
+    "customerId": "C004",
+    "productId": "P005",
+    "quantity": 1,
+    "amount": 440000,
+    "saleDate": "2024-11-18T13:30:00Z",
+    "paymentMethod": "bank_transfer",
+    "status": "completed",
+    "notes": "輸出業務コンサル"
+  },
+  {
+    "_id": "S006",
+    "customerId": "C005",
+    "productId": "P001",
+    "quantity": 2,
+    "amount": 660000,
+    "saleDate": "2024-12-22T11:00:00Z",
+    "paymentMethod": "bank_transfer",
+    "status": "completed",
+    "notes": "年末大口注文"
+  }
+]

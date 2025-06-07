@@ -1,0 +1,56 @@
+{
+  "mcpServers": {
+    "business-data": {
+      "command": "node",
+      "args": ["scripts/mcp-server.js"],
+      "env": {
+        "MONGODB_URI": "mongodb://localhost:27017/business-management",
+        "USE_JSON_FALLBACK": "true",
+        "MCP_LOG_LEVEL": "info"
+      }
+    }
+  },
+  "server": {
+    "name": "business-data-server",
+    "version": "1.0.0",
+    "description": "Business Management AI Platform MCP Server",
+    "author": "Business Management AI Team"
+  },
+  "tools": {
+    "get_customers": {
+      "description": "顧客データを取得します",
+      "maxResults": 100,
+      "cacheTTL": 300
+    },
+    "get_products": {
+      "description": "商品データを取得します", 
+      "maxResults": 100,
+      "cacheTTL": 300
+    },
+    "get_sales_data": {
+      "description": "売上データを取得します",
+      "maxResults": 1000,
+      "cacheTTL": 60
+    },
+    "get_financial_summary": {
+      "description": "財務サマリーを取得します",
+      "cacheTTL": 60
+    },
+    "search_business_data": {
+      "description": "ビジネスデータを検索します",
+      "maxResults": 50,
+      "cacheTTL": 30
+    }
+  },
+  "security": {
+    "apiKey": "mcp-business-key-456",
+    "rateLimiting": {
+      "enabled": true,
+      "maxRequestsPerMinute": 60
+    }
+  },
+  "logging": {
+    "level": "info",
+    "enableDebug": false
+  }
+}

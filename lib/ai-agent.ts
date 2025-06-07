@@ -5,6 +5,7 @@
 
 import { streamText } from "ai"
 import { createOpenAI } from "@ai-sdk/openai"
+import { getMCPClient, MCPClient, MCPToolResult } from "./mcp-client"
 
 export interface AgentContext {
   businessData: {
@@ -46,6 +47,7 @@ export class BusinessAIAgent {
     modelId: string
     apiEndpoint?: string
   }
+  private mcpClient: MCPClient
 
   constructor(config?: {
     provider?: string,
@@ -54,11 +56,12 @@ export class BusinessAIAgent {
     apiEndpoint?: string
   }) {
     this.aiConfig = {
-      provider: config?.provider || "openai",
-      apiKey: config?.apiKey || process.env.AI_API_KEY || "",
-      modelId: config?.modelId || "gpt-4o",
-      apiEndpoint: config?.apiEndpoint
+      provider: config?.provider || process.env.AI_PROVIDER || "ollama",
+      apiKey: config?.apiKey || process.env.AI_API_KEY || "ollama-local-key-123",
+      modelId: config?.modelId || process.env.AI_MODEL || "llama3.2",
+      apiEndpoint: config?.apiEndpoint || process.env.AI_ENDPOINT || "http://localhost:11435/v1"
     }
+    this.mcpClient = getMCPClient()
   }
 
   /**
@@ -132,12 +135,67 @@ export class BusinessAIAgent {
   }
 
   /**
-   * ビジネスデータを収集
+   * ビジネスデータを収集（MCP統合版）
    */
   async collectBusinessData(capabilities: AgentCapability[]): Promise<any> {
     const businessData: any = {}
 
     try {
+      // MCPサーバーへの接続を確認・確立
+      if (!this.mcpClient.isConnectedToServer()) {
+        console.log('🔗 MCPサーバーに接続中...')
+        await this.mcpClient.connect()
+      }
+
+      // 各機能に基づいてMCPツールでデータを収集
+      if (capabilities.includes(AgentCapability.CUSTOMER_INSIGHTS)) {
+        console.log('👥 顧客データを取得中...')
+        const customerResult = await this.mcpClient.callTool('get_customers', { 
+          limit: 10 
+        })
+        businessData.customers = customerResult.success ? customerResult.data : []
+      }
+
+      if (capabilities.includes(AgentCapability.SALES_FORECASTING)) {
+        console.log('📈 売上データを取得中...')
+        const salesResult = await this.mcpClient.callTool('get_sales_data', {})
+        businessData.sales = salesResult.success ? salesResult.data : []
+      }
+
+      if (capabilities.includes(AgentCapability.INVENTORY_OPTIMIZATION)) {
+        console.log('📦 在庫データを取得中...')
+        const productsResult = await this.mcpClient.callTool('get_products', {
+          limit: 10
+        })
+        businessData.inventory = productsResult.success ? productsResult.data : []
+      }
+
+      if (capabilities.includes(AgentCapability.FINANCIAL_ANALYSIS)) {
+        console.log('💰 財務データを取得中...')
+        const financialResult = await this.mcpClient.callTool('get_financial_summary', {})
+        businessData.finances = financialResult.success ? [financialResult.data] : []
+      }
+
+      console.log('✅ MCPデータ収集完了')
+
+    } catch (error) {
+      console.error('❌ MCPデータ収集エラー:', error)
+      // エラー時は従来のAPI呼び出しにフォールバック
+      return this.collectBusinessDataFallback(capabilities)
+    }
+
+    return businessData
+  }
+
+  /**
+   * フォールバック: 従来のAPI呼び出しでデータ収集
+   */
+  private async collectBusinessDataFallback(capabilities: AgentCapability[]): Promise<any> {
+    const businessData: any = {}
+
+    try {
+      console.log('⚠️ MCPフォールバック: 従来のAPI呼び出しを使用')
+      
       // 各機能に基づいてデータを収集
       if (capabilities.includes(AgentCapability.CUSTOMER_INSIGHTS)) {
         // 顧客データを取得（APIエンドポイントから）
@@ -172,23 +230,42 @@ export class BusinessAIAgent {
   async generateResponse(context: AgentContext) {
     const systemPrompt = this.buildSystemPrompt(context)
     
-    // プロバイダー設定に基づいてLLMを初期化
-    const llmProvider = createOpenAI({
-      baseURL: this.aiConfig.apiEndpoint,
-      apiKey: this.aiConfig.apiKey || "dummy"
+    console.log('🔧 AI設定:', {
+      provider: this.aiConfig.provider,
+      model: this.aiConfig.modelId,
+      endpoint: this.aiConfig.apiEndpoint,
+      hasApiKey: !!this.aiConfig.apiKey
     })
+    
+    try {
+      // プロバイダー設定に基づいてLLMを初期化
+      const llmProvider = createOpenAI({
+        baseURL: this.aiConfig.apiEndpoint,
+        apiKey: this.aiConfig.apiKey || "dummy"
+      })
 
-    return streamText({
-      model: llmProvider(this.aiConfig.modelId),
-      messages: [
-        { role: "system", content: systemPrompt },
-        { role: "user", content: context.userQuery }
-      ],
-    })
+      return streamText({
+        model: llmProvider(this.aiConfig.modelId),
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: context.userQuery }
+        ],
+        abortSignal: AbortSignal.timeout(300000), // 5分タイムアウト
+      })
+    } catch (error) {
+      console.error('AI応答生成エラー:', error)
+      
+      // タイムアウトエラーの場合の特別処理
+      if (error instanceof Error && (error.name === 'AbortError' || error.message.includes('timeout'))) {
+        throw new Error('AI応答がタイムアウトしました。もう一度お試しください。')
+      }
+      
+      throw error
+    }
   }
 
   /**
-   * コンテキストに基づいたシステムプロンプト構築（改善版）
+   * コンテキストに基づいたシステムプロンプト構築（改善版 + MCP対応）
    */
   private buildSystemPrompt(context: AgentContext): string {
     let prompt = `あなたは統合型ビジネス管理AIエージェント「Business Copilot」です。GitHub Copilotのように、ビジネス管理のあらゆる側面をサポートし、データに基づいた実用的な洞察と提案を提供します。
@@ -196,33 +273,34 @@ export class BusinessAIAgent {
 🎯 現在のコンテキスト:
 - 分析対象: ${context.intent}
 - 利用可能な機能: ${context.capabilities.join(', ')}
+- データソース: Model Context Protocol (MCP) + フォールバック
 
 `
 
     // ビジネスデータがある場合は分析結果を追加
     if (context.businessData.customers?.length) {
       const customerInsights = BusinessInsightEngine.analyzeCustomerInsights(context.businessData.customers)
-      prompt += `👥 顧客分析:\n${customerInsights}\n\n`
+      prompt += `👥 顧客分析 (MCP):\n${customerInsights}\n\n`
     }
     
     if (context.businessData.sales?.length) {
       const salesInsights = BusinessInsightEngine.analyzeSalesTrends(context.businessData.sales)
-      prompt += `📈 売上分析:\n${salesInsights}\n\n`
+      prompt += `📈 売上分析 (MCP):\n${salesInsights}\n\n`
     }
     
     if (context.businessData.inventory?.length) {
       const inventoryInsights = BusinessInsightEngine.analyzeInventoryOptimization(context.businessData.inventory)
-      prompt += `📦 在庫分析:\n${inventoryInsights}\n\n`
+      prompt += `📦 在庫分析 (MCP):\n${inventoryInsights}\n\n`
     }
     
     if (context.businessData.finances?.length) {
       const financialInsights = BusinessInsightEngine.analyzeFinancialHealth(context.businessData.finances)
-      prompt += `💰 財務分析:\n${financialInsights}\n\n`
+      prompt += `💰 財務分析 (MCP):\n${financialInsights}\n\n`
     }
 
     prompt += `
 🚀 あなたの役割:
-1. **データドリブン分析**: 提供されたビジネスデータを基に具体的な洞察を提供
+1. **MCPデータドリブン分析**: Model Context Protocolを通じて取得したリアルタイムビジネスデータを基に具体的な洞察を提供
 2. **実用的提案**: すぐに実行できる具体的なアクションプランを提示
 3. **意思決定支援**: データに基づいた戦略的判断をサポート
 4. **成長戦略**: ビジネス成長のための具体的な施策を提案
@@ -235,7 +313,12 @@ export class BusinessAIAgent {
 - 必要に応じて優先順位を明示
 - 絵文字を使って見やすく整理
 
-現在のユーザークエリに対して、上記の分析結果を活用しながら、実用的で行動可能なアドバイスを提供してください。`
+🔧 技術的優位性:
+- MCPプロトコルによる高速データアクセス
+- 複数データソースの統合分析
+- リアルタイム洞察提供
+
+現在のユーザークエリに対して、上記のMCP分析結果を活用しながら、実用的で行動可能なアドバイスを提供してください。`
 
     return prompt
   }
@@ -377,97 +460,168 @@ export class BusinessAIAgent {
 }
 
 /**
- * 高度なビジネス分析クラス
+ * 高度なビジネス分析クラス（MCP対応版）
  */
 export class BusinessInsightEngine {
   /**
-   * 売上トレンド分析
+   * 売上トレンド分析（MCP対応）
    */
   static analyzeSalesTrends(salesData: any[]): string {
-    if (!salesData.length) return "売上データが不足しています。"
+    if (!salesData.length) return "📊 売上データが不足しています。MCPサーバーからのデータ取得を確認してください。"
     
-    const current = salesData[0]
     let insights = []
     
-    if (current.salesGrowth > 10) {
-      insights.push(`🚀 売上成長率が${current.salesGrowth}%と好調です！`)
-    } else if (current.salesGrowth < -5) {
-      insights.push(`⚠️ 売上が${Math.abs(current.salesGrowth)}%減少しています。対策が必要です。`)
+    // 売上データの構造を動的に判断
+    if (typeof salesData[0] === 'object' && salesData[0].hasOwnProperty('amount')) {
+      // 個別売上データの場合
+      const totalSales = salesData.reduce((sum, sale) => sum + (sale.amount || 0), 0)
+      const averageSale = totalSales / salesData.length
+      
+      insights.push(`📊 総売上: ¥${totalSales.toLocaleString()}`)
+      insights.push(`📊 売上件数: ${salesData.length}件`)
+      insights.push(`📊 平均売上単価: ¥${Math.round(averageSale).toLocaleString()}`)
+      
+      // 最近の売上傾向
+      const recentSales = salesData.slice(-10)
+      const recentTotal = recentSales.reduce((sum, sale) => sum + (sale.amount || 0), 0)
+      const recentAverage = recentTotal / recentSales.length
+      
+      if (recentAverage > averageSale * 1.1) {
+        insights.push(`🚀 最近の売上が好調です！（直近平均: ¥${Math.round(recentAverage).toLocaleString()}）`)
+      } else if (recentAverage < averageSale * 0.9) {
+        insights.push(`⚠️ 最近の売上が低下しています（直近平均: ¥${Math.round(recentAverage).toLocaleString()}）`)
+      }
     } else {
-      insights.push(`📊 売上は安定推移（成長率: ${current.salesGrowth}%）`)
+      // 集約済みデータの場合
+      const current = salesData[0]
+      if (current.salesGrowth !== undefined) {
+        if (current.salesGrowth > 10) {
+          insights.push(`🚀 売上成長率が${current.salesGrowth}%と好調です！`)
+        } else if (current.salesGrowth < -5) {
+          insights.push(`⚠️ 売上が${Math.abs(current.salesGrowth)}%減少しています。対策が必要です。`)
+        } else {
+          insights.push(`📊 売上は安定推移（成長率: ${current.salesGrowth}%）`)
+        }
+      }
     }
     
     return insights.join('\n')
   }
 
   /**
-   * 在庫最適化提案
+   * 在庫最適化提案（MCP対応）
    */
   static analyzeInventoryOptimization(inventoryData: any[]): string {
-    if (!inventoryData.length) return "在庫データが不足しています。"
+    if (!inventoryData.length) return "📦 在庫データが不足しています。MCPサーバーからのデータ取得を確認してください。"
     
     let insights = []
-    const lowStockItems = inventoryData.filter(item => item.stock < 10)
-    const highValueItems = inventoryData.filter(item => item.price > 10000)
+    const lowStockItems = inventoryData.filter(item => (item.stock || item.quantity || 0) < 10)
+    const highValueItems = inventoryData.filter(item => (item.price || 0) > 10000)
+    const totalItems = inventoryData.length
+    
+    insights.push(`📦 総商品数: ${totalItems}点`)
     
     if (lowStockItems.length > 0) {
-      insights.push(`⚡ 在庫不足商品: ${lowStockItems.map(item => item.name).join(', ')}`)
-      insights.push(`💡 提案: 早急に補充を検討してください`)
+      insights.push(`⚡ 在庫不足商品: ${lowStockItems.length}点`)
+      insights.push(`💡 要補充商品: ${lowStockItems.slice(0, 3).map(item => item.name).join(', ')}${lowStockItems.length > 3 ? '他' : ''}`)
     }
     
     if (highValueItems.length > 0) {
-      insights.push(`💎 高価値商品: ${highValueItems.length}点`)
+      insights.push(`💎 高価値商品: ${highValueItems.length}点（¥10,000以上）`)
       insights.push(`💡 提案: 重点的な販売戦略を立案しましょう`)
+    }
+    
+    // 在庫総額を計算
+    const totalValue = inventoryData.reduce((sum, item) => 
+      sum + ((item.price || 0) * (item.stock || item.quantity || 0)), 0)
+    if (totalValue > 0) {
+      insights.push(`💰 総在庫価値: ¥${totalValue.toLocaleString()}`)
     }
     
     return insights.join('\n')
   }
 
   /**
-   * 顧客分析
+   * 顧客分析（MCP対応）
    */
   static analyzeCustomerInsights(customerData: any[]): string {
-    if (!customerData.length) return "顧客データが不足しています。"
+    if (!customerData.length) return "👥 顧客データが不足しています。MCPサーバーからのデータ取得を確認してください。"
     
     let insights = []
+    
+    const totalCustomers = customerData.length
+    insights.push(`👥 総顧客数: ${totalCustomers}名`)
+    
+    // 最近の顧客（createdAt, registeredAt, dateJoinedなどを確認）
     const recentCustomers = customerData.filter(customer => {
-      const createdDate = new Date(customer.createdAt)
+      const dateField = customer.createdAt || customer.registeredAt || customer.dateJoined
+      if (!dateField) return false
+      
+      const createdDate = new Date(dateField)
       const monthAgo = new Date()
       monthAgo.setMonth(monthAgo.getMonth() - 1)
       return createdDate > monthAgo
     })
     
-    insights.push(`👥 総顧客数: ${customerData.length}名`)
     insights.push(`🆕 新規顧客（過去1ヶ月）: ${recentCustomers.length}名`)
     
-    if (recentCustomers.length > 5) {
-      insights.push(`🚀 新規顧客獲得が好調です！`)
-    } else if (recentCustomers.length < 2) {
+    if (recentCustomers.length > totalCustomers * 0.2) {
+      insights.push(`🚀 新規顧客獲得が好調です！（成長率: ${Math.round((recentCustomers.length / totalCustomers) * 100)}%）`)
+    } else if (recentCustomers.length < totalCustomers * 0.05) {
       insights.push(`💡 新規顧客獲得の改善が必要です`)
+    }
+    
+    // 会社別分析
+    const companyCustomers = customerData.filter(c => c.company && c.company.trim())
+    if (companyCustomers.length > 0) {
+      insights.push(`🏢 法人顧客: ${companyCustomers.length}社`)
     }
     
     return insights.join('\n')
   }
 
   /**
-   * 財務健全性分析
+   * 財務健全性分析（MCP対応）
    */
   static analyzeFinancialHealth(financialData: any[]): string {
-    if (!financialData.length) return "財務データが不足しています。"
+    if (!financialData.length) return "💰 財務データが不足しています。MCPサーバーからのデータ取得を確認してください。"
     
     const current = financialData[0]
     let insights = []
     
-    if (current.profitMargin > 20) {
-      insights.push(`💰 利益率${current.profitMargin}%と優秀です！`)
-    } else if (current.profitMargin < 5) {
-      insights.push(`⚠️ 利益率${current.profitMargin}%が低いです。コスト削減を検討してください`)
+    // 売上・収益分析
+    if (current.totalRevenue !== undefined) {
+      insights.push(`💰 総売上: ¥${(current.totalRevenue || 0).toLocaleString()}`)
     }
     
-    if (current.netProfit > 0) {
-      insights.push(`✅ 黒字経営を維持（純利益: ¥${current.netProfit.toLocaleString()}）`)
-    } else {
-      insights.push(`🔴 赤字状況です。早急な改善策が必要です`)
+    if (current.totalExpenses !== undefined) {
+      insights.push(`💸 総経費: ¥${(current.totalExpenses || 0).toLocaleString()}`)
+    }
+    
+    // 利益率分析
+    if (current.profitMargin !== undefined) {
+      if (current.profitMargin > 20) {
+        insights.push(`✅ 利益率${current.profitMargin}%と優秀です！`)
+      } else if (current.profitMargin < 5) {
+        insights.push(`⚠️ 利益率${current.profitMargin}%が低いです。コスト削減を検討してください`)
+      } else {
+        insights.push(`📊 利益率: ${current.profitMargin}%`)
+      }
+    }
+    
+    // 純利益分析
+    if (current.netProfit !== undefined) {
+      if (current.netProfit > 0) {
+        insights.push(`✅ 黒字経営を維持（純利益: ¥${current.netProfit.toLocaleString()}）`)
+      } else {
+        insights.push(`🔴 赤字状況です（純損失: ¥${Math.abs(current.netProfit).toLocaleString()}）`)
+        insights.push(`💡 早急な改善策が必要です`)
+      }
+    }
+    
+    // 平均取引額
+    if (current.averageSaleAmount !== undefined && current.averageSaleAmount > 0) {
+      insights.push(`📊 平均取引額: ¥${Math.round(current.averageSaleAmount).toLocaleString()}`)
     }
     
     return insights.join('\n')
