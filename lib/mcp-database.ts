@@ -280,14 +280,15 @@ export class BusinessDatabaseMCPServer {
       }
     } catch (error) {
       // Fallback to JSON data
-      const jsonData = getJsonData('customers.json') || []
+      const jsonFileData = getJsonData('customers.json')
+      const jsonData = jsonFileData?.customers || []
       const { limit } = CustomerQuerySchema.parse(args)
       
       return {
-        customers: jsonData.slice(0, limit),
-        total: jsonData.length,
+        customers: Array.isArray(jsonData) ? jsonData.slice(0, limit) : [],
+        total: Array.isArray(jsonData) ? jsonData.length : 0,
         summary: {
-          totalCustomers: jsonData.length,
+          totalCustomers: Array.isArray(jsonData) ? jsonData.length : 0,
           recentCustomers: 0
         },
         source: 'json-fallback'
@@ -347,15 +348,16 @@ export class BusinessDatabaseMCPServer {
       }
     } catch (error) {
       // Fallback to JSON data
-      const jsonData = getJsonData('sales.json') || []
+      const jsonFileData = getJsonData('sales.json')
+      const jsonData = jsonFileData?.sales || []
       const { period } = SalesAnalysisSchema.parse(args)
       
       return {
         period,
-        sales: jsonData.slice(0, 20),
+        sales: Array.isArray(jsonData) ? jsonData.slice(0, 20) : [],
         analytics: {
-          totalSales: jsonData.reduce((sum: number, sale: any) => sum + (sale.amount || 0), 0),
-          salesCount: jsonData.length,
+          totalSales: Array.isArray(jsonData) ? jsonData.reduce((sum: number, sale: any) => sum + (sale.amount || 0), 0) : 0,
+          salesCount: Array.isArray(jsonData) ? jsonData.length : 0,
           averageSaleAmount: 0,
           topPaymentMethods: [],
           dailyBreakdown: []
@@ -395,14 +397,15 @@ export class BusinessDatabaseMCPServer {
       }
     } catch (error) {
       // Fallback to JSON data
-      const jsonData = getJsonData('products.json') || []
+      const jsonFileData = getJsonData('products.json')
+      const jsonData = jsonFileData?.products || []
       const { limit } = ProductQuerySchema.parse(args)
       
       return {
-        products: jsonData.slice(0, limit),
-        total: jsonData.length,
+        products: Array.isArray(jsonData) ? jsonData.slice(0, limit) : [],
+        total: Array.isArray(jsonData) ? jsonData.length : 0,
         summary: {
-          totalProducts: jsonData.length,
+          totalProducts: Array.isArray(jsonData) ? jsonData.length : 0,
           lowStockItems: 0,
           totalInventoryValue: 0,
           categories: []
@@ -479,20 +482,22 @@ export class BusinessDatabaseMCPServer {
       return result
     } catch (error) {
       // Fallback to JSON data
-      const salesData = getJsonData('sales.json') || []
-      const financesData = getJsonData('finances.json') || []
+      const salesFileData = getJsonData('sales.json')
+      const financesFileData = getJsonData('finances.json')
+      const salesData = salesFileData?.sales || []
+      const financesData = financesFileData?.finances || []
       const { period } = FinancialReportSchema.parse(args)
       
       return {
         period,
         sales: {
-          total: salesData.reduce((sum: number, sale: any) => sum + (sale.amount || 0), 0),
-          count: salesData.length,
+          total: Array.isArray(salesData) ? salesData.reduce((sum: number, sale: any) => sum + (sale.amount || 0), 0) : 0,
+          count: Array.isArray(salesData) ? salesData.length : 0,
           average: 0
         },
         expenses: {
-          total: financesData.reduce((sum: number, expense: any) => sum + (expense.amount || 0), 0),
-          count: financesData.length,
+          total: Array.isArray(financesData) ? financesData.reduce((sum: number, expense: any) => sum + (expense.amount || 0), 0) : 0,
+          count: Array.isArray(financesData) ? financesData.length : 0,
           byCategory: {}
         },
         source: 'json-fallback'
