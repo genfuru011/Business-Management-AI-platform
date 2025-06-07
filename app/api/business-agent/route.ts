@@ -7,15 +7,29 @@ export async function POST(req: NextRequest) {
   try {
     const { 
       query, 
+      messages,
       provider,
       apiKey,
       modelId,
       apiEndpoint 
     } = await req.json()
 
-    console.log('Business AI Agent Request:', { query, provider, modelId })
+    // Extract query from messages array (useChat format) or use direct query parameter (backward compatibility)
+    let userQuery: string
+    if (messages && Array.isArray(messages) && messages.length > 0) {
+      // Get the last user message from messages array
+      const lastUserMessage = messages.filter(m => m.role === 'user').pop()
+      userQuery = lastUserMessage?.content || ''
+    } else if (query && typeof query === 'string') {
+      // Backward compatibility with direct query parameter
+      userQuery = query
+    } else {
+      userQuery = ''
+    }
 
-    if (!query || typeof query !== 'string') {
+    console.log('Business AI Agent Request:', { userQuery, provider, modelId })
+
+    if (!userQuery || typeof userQuery !== 'string' || userQuery.trim() === '') {
       return NextResponse.json(
         { error: 'クエリが必要です' },
         { status: 400 }
@@ -23,7 +37,7 @@ export async function POST(req: NextRequest) {
     }
 
     // AIエージェントでクエリを処理
-    const result = await processBusinessQuery(query, {
+    const result = await processBusinessQuery(userQuery, {
       provider,
       apiKey,
       modelId,
