@@ -4,7 +4,7 @@
  * Simple test script for MCP functionality
  */
 
-const { businessMCPClient } = require('../lib/mcp-database')
+import { businessMCPClient } from '../lib/mcp-database.ts'
 
 async function testMCPBasics() {
   console.log('🧪 Testing MCP (Model Context Protocol) Implementation...\n')
