@@ -100,6 +100,36 @@ export const LLM_PROVIDERS: LLMProvider[] = [
     isLocal: false
   },
   {
+    id: 'openrouter',
+    name: 'OpenRouter',
+    models: [
+      {
+        id: 'deepseek/deepseek-r1-distill-llama-70b',
+        name: 'DeepSeek R1 Distill Llama 70B',
+        description: 'DeepSeek R1の蒸留版（推奨・無料）'
+      },
+      {
+        id: 'deepseek/deepseek-r1-distill-qwen-32b',
+        name: 'DeepSeek R1 Distill Qwen 32B',
+        description: 'DeepSeek R1 Qwen版（無料）'
+      },
+      {
+        id: 'deepseek/deepseek-r1',
+        name: 'DeepSeek R1',
+        description: 'DeepSeek R1フルモデル'
+      },
+      {
+        id: 'deepseek/deepseek-chat',
+        name: 'DeepSeek Chat',
+        description: 'DeepSeek汎用チャットモデル'
+      }
+    ],
+    apiEndpoint: 'https://openrouter.ai/api/v1',
+    requiresApiKey: true,
+    description: 'OpenRouter経由のDeepSeek R1無料API',
+    isLocal: false
+  },
+  {
     id: 'ollama',
     name: 'Ollama (ローカル)',
     models: [
@@ -139,8 +169,8 @@ export interface LLMSettings {
 }
 
 export const DEFAULT_LLM_SETTINGS: LLMSettings = {
-  providerId: 'ollama',
-  modelId: 'llama3.2',
+  providerId: 'openrouter',
+  modelId: 'deepseek/deepseek-r1-distill-llama-70b',
   apiKey: '',
   customEndpoint: ''
 }
@@ -160,5 +190,5 @@ export function getProviderApiEndpoint(providerId: string, customEndpoint?: stri
   }
   
   const provider = getProviderById(providerId)
-  return provider?.apiEndpoint || 'http://localhost:11434/v1'
+  return provider?.apiEndpoint || 'https://openrouter.ai/api/v1'
 }

@@ -18,6 +18,7 @@ import {
   JapaneseTemporalQueryParser, 
   TemporalContext 
 } from './temporal-query-parser'
+import { getProviderApiEndpoint } from './llm-providers'
 
 export interface EnhancedAgentContext extends AgentContext {
   mcpTools: string[]
@@ -62,9 +63,9 @@ export class EnhancedBusinessAIAgent {
     apiEndpoint?: string
   }) {
     this.aiConfig = {
-      provider: config?.provider || "openai",
+      provider: config?.provider || "openrouter",
       apiKey: config?.apiKey || process.env.AI_API_KEY || "",
-      modelId: config?.modelId || "gpt-4o",
+      modelId: config?.modelId || "deepseek/deepseek-r1-distill-llama-70b",
       apiEndpoint: config?.apiEndpoint
     }
     
@@ -278,8 +279,9 @@ export class EnhancedBusinessAIAgent {
     const systemPrompt = this.buildEnhancedSystemPrompt(context)
     
     // Initialize LLM provider
+    const endpoint = getProviderApiEndpoint(this.aiConfig.provider, this.aiConfig.apiEndpoint)
     const llmProvider = createOpenAI({
-      baseURL: this.aiConfig.apiEndpoint,
+      baseURL: endpoint,
       apiKey: this.aiConfig.apiKey || "dummy"
     })
 

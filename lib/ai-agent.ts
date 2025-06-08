@@ -5,6 +5,7 @@
 
 import { streamText } from "ai"
 import { createOpenAI } from "@ai-sdk/openai"
+import { getProviderApiEndpoint } from './llm-providers'
 
 export interface AgentContext {
   businessData: {
@@ -54,9 +55,9 @@ export class BusinessAIAgent {
     apiEndpoint?: string
   }) {
     this.aiConfig = {
-      provider: config?.provider || "openai",
+      provider: config?.provider || "openrouter",
       apiKey: config?.apiKey || process.env.AI_API_KEY || "",
-      modelId: config?.modelId || "gpt-4o",
+      modelId: config?.modelId || "deepseek/deepseek-r1-distill-llama-70b",
       apiEndpoint: config?.apiEndpoint
     }
   }
@@ -173,8 +174,9 @@ export class BusinessAIAgent {
     const systemPrompt = this.buildSystemPrompt(context)
     
     // プロバイダー設定に基づいてLLMを初期化
+    const endpoint = getProviderApiEndpoint(this.aiConfig.provider, this.aiConfig.apiEndpoint)
     const llmProvider = createOpenAI({
-      baseURL: this.aiConfig.apiEndpoint,
+      baseURL: endpoint,
       apiKey: this.aiConfig.apiKey || "dummy"
     })
 

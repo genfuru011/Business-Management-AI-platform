@@ -108,10 +108,10 @@ AIエージェントUIコンポーネント（`BusinessAIAgent.tsx`）は以下�
 AIエージェントは環境変数で設定可能：
 
 ```
-NEXT_PUBLIC_AI_PROVIDER=openai
-NEXT_PUBLIC_AI_MODEL=gpt-4o
-NEXT_PUBLIC_AI_API_KEY=your_api_key
-NEXT_PUBLIC_AI_ENDPOINT=https://api.openai.com/v1 (optional)
+NEXT_PUBLIC_AI_PROVIDER=openrouter
+NEXT_PUBLIC_AI_MODEL=deepseek/deepseek-r1-distill-llama-70b
+NEXT_PUBLIC_AI_API_KEY=your_openrouter_api_key
+NEXT_PUBLIC_AI_ENDPOINT=https://openrouter.ai/api/v1 (optional)
 ```
 
 ## 📈 統計・学習データ

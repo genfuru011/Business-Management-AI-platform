@@ -230,10 +230,10 @@ Ollama Server → Model Loading → Response Generation → Streaming
 ### 必要な環境変数 (`.env.local`)
 ```bash
 # AI Provider Settings
-NEXT_PUBLIC_AI_PROVIDER=ollama
-NEXT_PUBLIC_AI_MODEL=llama3.2
-NEXT_PUBLIC_AI_API_KEY=ollama-local-key-123
-NEXT_PUBLIC_AI_ENDPOINT=http://localhost:11435/v1
+NEXT_PUBLIC_AI_PROVIDER=openrouter
+NEXT_PUBLIC_AI_MODEL=deepseek/deepseek-r1-distill-llama-70b
+NEXT_PUBLIC_AI_API_KEY=your_openrouter_api_key
+NEXT_PUBLIC_AI_ENDPOINT=https://openrouter.ai/api/v1
 
 # Database Settings
 MONGODB_URI=mongodb://localhost:27017/business-management
@@ -249,27 +249,26 @@ NEXT_PUBLIC_APP_NAME=AI統合ビジネス管理プラットフォーム
 # 1. MongoDB起動
 brew services start mongodb-community
 
-# 2. Ollama起動
-ollama serve
+# 2. OpenRouter APIキーの設定
+export NEXT_PUBLIC_AI_API_KEY=your_openrouter_api_key
 
-# 3. 必要なモデルダウンロード
-ollama pull llama3.2
-ollama pull tinyllama
+# 3. 開発サーバー起動
+npm run dev
 
-# 4. フルスタック開発サーバー起動
-npm run dev-full-stack
+# オプション: フルスタック開発（Ollama使用時）
+# npm run dev-full-stack
 ```
 
 ## 🔒 セキュリティ仕様
 
 ### 認証・認可
-- **APIキー認証**: Ollamaプロキシサーバー
-- **レート制限**: 15分間で100リクエスト
+- **APIキー認証**: OpenRouter API
+- **レート制限**: OpenRouterのAPI制限に準拠
 - **CORS設定**: オリジン制限
 
 ### データプライバシー
-- **ローカル処理**: AIモデルはローカルで実行
-- **データ暗号化**: MongoDB接続暗号化対応
+- **クラウド処理**: OpenRouter経由でDeepSeek R1を使用
+- **データ暗号化**: HTTPS通信・MongoDB接続暗号化対応
 - **ログ管理**: 個人情報のログ出力制限
 
 ## 📈 パフォーマンス最適化
