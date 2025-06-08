@@ -54,6 +54,11 @@ export const LLM_PROVIDERS: LLMProvider[] = [
         description: '最新の高性能モデル（推奨）'
       },
       {
+        id: 'claude-3-5-sonnet-20240620',
+        name: 'Claude 3.5 Sonnet (Previous)',
+        description: '前バージョンの高性能モデル'
+      },
+      {
         id: 'claude-3-haiku-20240307',
         name: 'Claude 3 Haiku',
         description: '高速・低コストモデル'
@@ -74,9 +79,14 @@ export const LLM_PROVIDERS: LLMProvider[] = [
     name: 'Google Gemini',
     models: [
       {
+        id: 'gemini-2.0-flash-exp',
+        name: 'Gemini 2.0 Flash',
+        description: '最新の高速モデル（推奨）'
+      },
+      {
         id: 'gemini-1.5-pro',
         name: 'Gemini 1.5 Pro',
-        description: '高性能モデル（推奨）'
+        description: '高性能モデル'
       },
       {
         id: 'gemini-1.5-flash',
