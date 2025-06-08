@@ -9,7 +9,7 @@ export async function GET() {
     const sales = await Sale.find()
       .populate('customer', 'name email company')
       .populate('invoice', 'invoiceNumber')
-      .select('invoice customer amount paymentMethod saleDate notes')
+      .select('invoice customer amount paymentMethod saleDate notes saleType productName description quantity unitPrice')
       .sort({ saleDate: -1 })
     
     return NextResponse.json({
@@ -34,7 +34,42 @@ export async function POST(request: Request) {
     await dbConnect()
     
     const body = await request.json()
-    const sale = new Sale(body)
+    
+    // 売上データのバリデーション
+    if (!body.customer || !body.amount) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: '顧客IDと金額は必須です'
+        },
+        { status: 400 }
+      )
+    }
+    
+    // 売上タイプに基づいてデータを構築
+    const saleData = {
+      customer: body.customer,
+      amount: body.amount,
+      paymentMethod: body.paymentMethod || 'cash',
+      saleDate: body.saleDate || new Date(),
+      notes: body.notes,
+      saleType: body.saleType || 'direct_sale'
+    }
+    
+    // 請求書ベースの売上の場合
+    if (body.saleType === 'invoice_based' && body.invoice) {
+      saleData.invoice = body.invoice
+    }
+    
+    // 直接売上の場合の商品情報
+    if (body.saleType === 'direct_sale') {
+      if (body.productName) saleData.productName = body.productName
+      if (body.description) saleData.description = body.description
+      if (body.quantity) saleData.quantity = body.quantity
+      if (body.unitPrice) saleData.unitPrice = body.unitPrice
+    }
+    
+    const sale = new Sale(saleData)
     await sale.save()
     
     const populatedSale = await Sale.findById(sale._id)

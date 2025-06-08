@@ -215,12 +215,30 @@ const SaleSchema = new mongoose.Schema({
   invoice: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Invoice',
-    required: true
+    required: false  // 請求書と売上を分離 - invoiceは任意に
   },
   customer: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Customer',
     required: true
+  },
+  // 売上が請求書ベースでない場合の商品情報
+  productName: {
+    type: String,
+    trim: true
+  },
+  description: {
+    type: String,
+    trim: true
+  },
+  quantity: {
+    type: Number,
+    min: 1,
+    default: 1
+  },
+  unitPrice: {
+    type: Number,
+    min: 0
   },
   amount: {
     type: Number,
@@ -235,6 +253,12 @@ const SaleSchema = new mongoose.Schema({
   saleDate: {
     type: Date,
     default: Date.now
+  },
+  // 売上タイプの追加
+  saleType: {
+    type: String,
+    enum: ['invoice_based', 'direct_sale'],
+    default: 'direct_sale'
   },
   notes: {
     type: String,
