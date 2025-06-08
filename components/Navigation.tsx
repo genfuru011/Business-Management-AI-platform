@@ -36,6 +36,9 @@ export default function Navigation() {
         <p className="text-gray-400 text-sm mt-1">
           AI統合プラットフォーム
         </p>
+        <div className="mt-2 px-2 py-1 bg-blue-600 rounded text-xs text-center">
+          🧠 フル機能版
+        </div>
         
         {/* AIエージェント機能強調 */}
         <div className="mt-4 p-3 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg">
