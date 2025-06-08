@@ -1,56 +1,40 @@
 {
-  "name": "business-management-ai",
+  "name": "simple-business-management",
   "version": "1.0.0",
-  "description": "AI-Integrated Business Management Platform",
-  "author": "AI Business Management Team",
+  "description": "Simple Business Management Platform without AI",
+  "author": "Business Management Team",
   "private": true,
   "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "dev:simple": "cd simple-version && npm run dev",
-    "build:simple": "cd simple-version && npm run build"
+    "lint": "next lint"
   },
   "dependencies": {
-    "@ai-sdk/openai": "^0.0.50",
-    "@ai-sdk/react": "^0.0.62",
     "@radix-ui/react-dialog": "^1.1.14",
     "@radix-ui/react-label": "^2.1.7",
     "@radix-ui/react-select": "^2.2.5",
     "@radix-ui/react-slot": "^1.2.3",
     "@radix-ui/react-tabs": "^1.1.12",
-    "ai": "^3.4.33",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
-    "html2canvas": "^1.4.1",
-    "jspdf": "^3.0.1",
     "lucide-react": "^0.263.1",
-    "mongoose": "^8.15.1",
     "next": "15.0.0",
-    "puppeteer": "^24.10.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "tailwind-merge": "^1.14.0",
-    "tailwindcss-animate": "^1.0.7",
-    "xlsx": "^0.18.5",
-    "zod": "^3.22.4"
+    "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
-    "@types/jest": "^29.5.14",
     "@types/node": "^20.19.0",
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
     "autoprefixer": "^10.0.1",
     "eslint": "^8.0.0",
     "eslint-config-next": "15.0.0",
-    "jest": "^29.7.0",
     "postcss": "^8.0.0",
     "tailwindcss": "^3.3.0",
-    "ts-jest": "^29.3.4",
     "typescript": "^5.0.0"
   }
 }
