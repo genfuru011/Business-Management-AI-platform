@@ -14,10 +14,15 @@ import {
   AgentCapability,
   BusinessInsightEngine 
 } from './ai-agent'
+import { 
+  JapaneseTemporalQueryParser, 
+  TemporalContext 
+} from './temporal-query-parser'
 
 export interface EnhancedAgentContext extends AgentContext {
   mcpTools: string[]
   mcpResources: string[]
+  temporalContext?: TemporalContext
   error?: {
     message: string
     timestamp: string
@@ -74,11 +79,14 @@ export class EnhancedBusinessAIAgent {
       // Analyze intent
       const intent = await this.analyzeIntent(query)
       
+      // Parse temporal context from the query
+      const temporalContext = JapaneseTemporalQueryParser.parseTemporalContext(query) || undefined
+      
       // Get required capabilities
       const capabilities = this.getRequiredCapabilities(intent)
       
-      // Collect business data using MCP
-      const businessData = await this.collectBusinessDataViaMCP(capabilities)
+      // Collect business data using MCP with temporal context
+      const businessData = await this.collectBusinessDataViaMCP(capabilities, temporalContext)
       
       // Get available MCP tools and resources
       const mcpTools = await this.mcpClient.listTools()
@@ -92,6 +100,7 @@ export class EnhancedBusinessAIAgent {
         capabilities,
         mcpTools: mcpTools.map(tool => tool.name),
         mcpResources: mcpResources.map(resource => resource.uri),
+        temporalContext,
         error: businessData.error
       }
       
@@ -181,10 +190,15 @@ export class EnhancedBusinessAIAgent {
   /**
    * Collect business data using MCP tools
    */
-  private async collectBusinessDataViaMCP(capabilities: AgentCapability[]): Promise<EnhancedBusinessData> {
+  private async collectBusinessDataViaMCP(capabilities: AgentCapability[], temporalContext?: TemporalContext): Promise<EnhancedBusinessData> {
     const businessData: EnhancedBusinessData = {}
 
     try {
+      // Determine the period to use for data collection
+      const period = temporalContext ? 
+        JapaneseTemporalQueryParser.temporalContextToPeriod(temporalContext) : 
+        'month'
+
       // Use MCP tools based on required capabilities
       if (capabilities.includes(AgentCapability.CUSTOMER_INSIGHTS)) {
         console.log('Collecting customer data via MCP...')
@@ -195,10 +209,17 @@ export class EnhancedBusinessAIAgent {
       }
 
       if (capabilities.includes(AgentCapability.SALES_FORECASTING)) {
-        console.log('Collecting sales data via MCP...')
-        businessData.sales = await this.mcpClient.invokeTool('analyze_sales', {
-          period: 'month'
-        })
+        console.log(`Collecting sales data via MCP with period: ${period}...`)
+        
+        const salesArgs: any = { period }
+        
+        // Add date range if temporal context is available
+        if (temporalContext?.startDate && temporalContext?.endDate) {
+          salesArgs.startDate = temporalContext.startDate.toISOString().split('T')[0]
+          salesArgs.endDate = temporalContext.endDate.toISOString().split('T')[0]
+        }
+        
+        businessData.sales = await this.mcpClient.invokeTool('analyze_sales', salesArgs)
       }
 
       if (capabilities.includes(AgentCapability.INVENTORY_OPTIMIZATION)) {
@@ -210,17 +231,26 @@ export class EnhancedBusinessAIAgent {
       }
 
       if (capabilities.includes(AgentCapability.FINANCIAL_ANALYSIS)) {
-        console.log('Collecting financial data via MCP...')
-        businessData.finances = await this.mcpClient.invokeTool('generate_financial_report', {
-          period: 'month',
+        console.log(`Collecting financial data via MCP with period: ${period}...`)
+        
+        const financialArgs: any = {
+          period,
           includeExpenses: true,
           includeSales: true
-        })
+        }
+        
+        // Add date range if temporal context is available
+        if (temporalContext?.startDate && temporalContext?.endDate) {
+          financialArgs.startDate = temporalContext.startDate.toISOString().split('T')[0]
+          financialArgs.endDate = temporalContext.endDate.toISOString().split('T')[0]
+        }
+        
+        businessData.finances = await this.mcpClient.invokeTool('generate_financial_report', financialArgs)
       }
 
       // For comprehensive analysis, get business overview
       if (capabilities.length > 2) {
-        console.log('Collecting business overview via MCP...')
+        console.log(`Collecting business overview via MCP with period: ${period}...`)
         businessData.overview = await this.mcpClient.invokeTool('get_business_overview', {
           includeCustomers: capabilities.includes(AgentCapability.CUSTOMER_INSIGHTS),
           includeSales: capabilities.includes(AgentCapability.SALES_FORECASTING),
@@ -289,7 +319,19 @@ export class EnhancedBusinessAIAgent {
     let report = `# ビジネス分析レポート (MCP統合版)\n\n`
     report += `📊 **分析対象**: ${context.userQuery}\n`
     report += `🔗 **データソース**: Model Context Protocol (MCP)\n`
-    report += `⏰ **分析日時**: ${new Date().toLocaleString('ja-JP')}\n\n`
+    report += `⏰ **分析日時**: ${new Date().toLocaleString('ja-JP')}\n`
+    
+    // Add temporal context if available
+    if (context.temporalContext) {
+      const description = JapaneseTemporalQueryParser.describeTemporalContext(context.temporalContext)
+      report += `🕒 **分析期間**: ${description} (${context.temporalContext.originalExpression})\n`
+      
+      if (context.temporalContext.startDate && context.temporalContext.endDate) {
+        report += `📅 **対象期間**: ${context.temporalContext.startDate.toLocaleDateString('ja-JP')} 〜 ${context.temporalContext.endDate.toLocaleDateString('ja-JP')}\n`
+      }
+    }
+    
+    report += `\n`
 
     // Error handling
     if (context.error) {
@@ -311,8 +353,12 @@ export class EnhancedBusinessAIAgent {
     // Sales analysis
     if (context.businessData.sales) {
       const salesData = context.businessData.sales as any
+      const periodDescription = context.temporalContext ? 
+        JapaneseTemporalQueryParser.describeTemporalContext(context.temporalContext) : 
+        (salesData.period || 'month')
+      
       report += `## 📈 売上分析\n`
-      report += `- **分析期間**: ${salesData.period || 'month'}\n`
+      report += `- **分析期間**: ${periodDescription}\n`
       if (salesData.analytics) {
         report += `- **総売上**: ¥${salesData.analytics.totalSales?.toLocaleString() || 0}\n`
         report += `- **取引件数**: ${salesData.analytics.salesCount || 0}件\n`
@@ -337,8 +383,12 @@ export class EnhancedBusinessAIAgent {
     // Financial analysis
     if (context.businessData.finances) {
       const financialData = context.businessData.finances as any
+      const periodDescription = context.temporalContext ? 
+        JapaneseTemporalQueryParser.describeTemporalContext(context.temporalContext) : 
+        (financialData.period || 'month')
+      
       report += `## 💰 財務分析\n`
-      report += `- **分析期間**: ${financialData.period || 'month'}\n`
+      report += `- **分析期間**: ${periodDescription}\n`
       if (financialData.sales) {
         report += `- **総売上**: ¥${financialData.sales.total?.toLocaleString() || 0}\n`
       }
@@ -360,16 +410,24 @@ export class EnhancedBusinessAIAgent {
 
     // Recommendations
     report += `## 💡 提案事項\n`
-    if (context.businessData.inventory?.summary?.lowStockItems > 0) {
-      report += `- ⚠️ ${context.businessData.inventory.summary.lowStockItems}点の商品で在庫不足 → 早急な補充計画が必要\n`
+    if (context.businessData.inventory && (context.businessData.inventory as any).summary?.lowStockItems > 0) {
+      const inventoryData = context.businessData.inventory as any
+      report += `- ⚠️ ${inventoryData.summary.lowStockItems}点の商品で在庫不足 → 早急な補充計画が必要\n`
     }
-    if (context.businessData.finances?.profitability?.profitMargin) {
-      const margin = context.businessData.finances.profitability.profitMargin
+    if (context.businessData.finances && (context.businessData.finances as any).profitability?.profitMargin) {
+      const financialData = context.businessData.finances as any
+      const margin = financialData.profitability.profitMargin
       if (margin > 20) {
         report += `- ✅ 利益率${margin.toFixed(1)}%は優秀 → 現在の戦略を継続\n`
       } else if (margin < 5) {
         report += `- ⚠️ 利益率${margin.toFixed(1)}%が低い → コスト削減または価格見直しを検討\n`
       }
+    }
+
+    // Add temporal context specific recommendations
+    if (context.temporalContext) {
+      const description = JapaneseTemporalQueryParser.describeTemporalContext(context.temporalContext)
+      report += `- 📊 ${description}のデータに基づく分析完了 → 次期の計画立案に活用してください\n`
     }
 
     report += `\n---\n`
@@ -397,7 +455,21 @@ Model Context Protocol (MCP) を使用して、安全で標準化されたデー
 - 分析対象: ${context.intent}
 - 利用可能な機能: ${context.capabilities.join(', ')}
 - MCP Tools: ${context.mcpTools.join(', ')}
-- MCP Resources: ${context.mcpResources.length} リソース利用可能
+- MCP Resources: ${context.mcpResources.length} リソース利用可能`
+
+    // Add temporal context information
+    if (context.temporalContext) {
+      const description = JapaneseTemporalQueryParser.describeTemporalContext(context.temporalContext)
+      prompt += `
+- 🕒 分析期間: ${description} (${context.temporalContext.originalExpression})`
+      
+      if (context.temporalContext.startDate && context.temporalContext.endDate) {
+        prompt += `
+- 📅 対象期間: ${context.temporalContext.startDate.toLocaleDateString('ja-JP')} 〜 ${context.temporalContext.endDate.toLocaleDateString('ja-JP')}`
+      }
+    }
+
+    prompt += `
 
 `
 
@@ -434,8 +506,12 @@ ${context.error.message}
 
     if (context.businessData.sales) {
       const salesData = context.businessData.sales as any
+      const periodDescription = context.temporalContext ? 
+        JapaneseTemporalQueryParser.describeTemporalContext(context.temporalContext) : 
+        (salesData.period || 'month')
+      
       prompt += `📈 売上分析 (MCP経由):
-- 分析期間: ${salesData.period || 'month'}
+- 分析期間: ${periodDescription}
 - 総売上: ¥${salesData.analytics?.totalSales?.toLocaleString() || 0}
 - 取引件数: ${salesData.analytics?.salesCount || 0}件
 - 平均取引額: ¥${salesData.analytics?.averageSaleAmount?.toLocaleString() || 0}
@@ -458,8 +534,12 @@ ${context.error.message}
 
     if (context.businessData.finances) {
       const financialData = context.businessData.finances as any
+      const periodDescription = context.temporalContext ? 
+        JapaneseTemporalQueryParser.describeTemporalContext(context.temporalContext) : 
+        (financialData.period || 'month')
+      
       prompt += `💰 財務分析 (MCP経由):
-- 分析期間: ${financialData.period || 'month'}
+- 分析期間: ${periodDescription}
 - 総売上: ¥${financialData.sales?.total?.toLocaleString() || 0}
 - 総支出: ¥${financialData.expenses?.total?.toLocaleString() || 0}
 - 利益率: ${financialData.profitability?.profitMargin?.toFixed(2) || 0}%
@@ -474,14 +554,30 @@ ${context.error.message}
 2. **リアルタイム洞察**: 最新のビジネスデータから即座に実用的な洞察を提供
 3. **セキュアな処理**: 安全で標準化されたデータアクセスパターンの活用
 4. **エラー耐性**: データアクセス問題時の適切なフォールバック対応
-5. **統合レポート**: 複数データソースからの包括的な分析レポート生成
+5. **統合レポート**: 複数データソースからの包括的な分析レポート生成`
+    
+    // Add temporal-aware instructions
+    if (context.temporalContext) {
+      prompt += `
+6. **時間軸分析**: ${context.temporalContext.originalExpression}に基づく適切な期間でのデータ分析`
+    }
+
+    prompt += `
 
 💡 回答スタイル:
 - MCPを通じて取得した正確なデータに基づく分析
 - データの信頼性とアクセス方法の明示
 - 具体的な数値と統計に基づく提案
 - エラーやデータ不足時の透明な説明
-- アクション可能な改善提案の提供
+- アクション可能な改善提案の提供`
+
+    // Add temporal context awareness
+    if (context.temporalContext) {
+      prompt += `
+- ${context.temporalContext.originalExpression}の期間に特化した分析と提案`
+    }
+
+    prompt += `
 
 現在のユーザークエリに対して、MCP経由で取得したデータを最大限活用して、実用的で行動可能なアドバイスを提供してください。`
 
