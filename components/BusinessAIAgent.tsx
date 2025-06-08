@@ -7,6 +7,9 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { aiLearningEngine } from '@/lib/ai-learning'
+import { llmSettingsStore } from '@/lib/llm-settings-store'
+import { LLMSettings, getProviderApiEndpoint } from '@/lib/llm-providers'
+import LLMSelector from '@/components/LLMSelector'
 import { 
   Bot, 
   Send, 
@@ -63,13 +66,16 @@ export default function BusinessAIAgent({
   const [showFeedback, setShowFeedback] = useState<{[key: string]: boolean}>({})
   const [learningStats, setLearningStats] = useState(aiLearningEngine.getAnalytics())
   
-  // AIの設定（デフォルトはOpenAI、環境変数からAPI設定を取得）
-  const [aiSettings] = useState({
-    provider: process.env.NEXT_PUBLIC_AI_PROVIDER || 'openai',
-    apiKey: process.env.NEXT_PUBLIC_AI_API_KEY,
-    modelId: process.env.NEXT_PUBLIC_AI_MODEL || 'gpt-4o',
-    apiEndpoint: process.env.NEXT_PUBLIC_AI_ENDPOINT
-  })
+  // LLM設定を動的に管理
+  const [llmSettings, setLlmSettings] = useState<LLMSettings>(llmSettingsStore.getSettings())
+  
+  // LLM設定に基づいてAI設定を構築
+  const aiSettings = {
+    provider: llmSettings.providerId,
+    apiKey: llmSettings.apiKey,
+    modelId: llmSettings.modelId,
+    apiEndpoint: getProviderApiEndpoint(llmSettings.providerId, llmSettings.customEndpoint)
+  }
 
   const { messages, input, handleInputChange, handleSubmit, isLoading, setInput } = useChat({
     api: '/api/business-agent',
@@ -134,6 +140,15 @@ export default function BusinessAIAgent({
     return () => clearInterval(interval)
   }, [])
 
+  // LLM設定の変更を監視
+  useEffect(() => {
+    const unsubscribe = llmSettingsStore.subscribe((newSettings) => {
+      setLlmSettings(newSettings)
+    })
+
+    return unsubscribe
+  }, [])
+
   const handleSuggestedQuery = (query: string) => {
     handleInputChange({ target: { value: query } } as any)
   }
@@ -191,6 +206,10 @@ export default function BusinessAIAgent({
             <Minimize2 className="h-4 w-4" />
           </Button>
         </CardTitle>
+        {/* LLM選択コンポーネント */}
+        <div className="mt-2">
+          <LLMSelector />
+        </div>
       </CardHeader>
       <CardContent className="p-0">
         {/* 提案クエリ */}
