@@ -1,6 +1,6 @@
 import mongoose from 'mongoose'
-import fs from 'fs'
-import path from 'path'
+import * as fs from 'fs'
+import * as path from 'path'
 
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/business-management'
 const USE_JSON_FALLBACK = process.env.USE_JSON_FALLBACK === 'true'

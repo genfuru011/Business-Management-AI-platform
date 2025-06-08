@@ -47,7 +47,7 @@ export async function POST(request: Request) {
     }
     
     // 売上タイプに基づいてデータを構築
-    const saleData = {
+    const saleData: any = {
       customer: body.customer,
       amount: body.amount,
       paymentMethod: body.paymentMethod || 'cash',

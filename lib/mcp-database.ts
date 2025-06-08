@@ -260,7 +260,7 @@ export class BusinessDatabaseMCPServer {
         if (filter.company) query.company = new RegExp(filter.company, 'i')
       }
       
-      const customers = await Customer.find(query)
+      const customers = await Customer.find(query as any)
         .limit(limit)
         .sort({ createdAt: -1 })
         .select('name email company phone createdAt')
@@ -329,7 +329,7 @@ export class BusinessDatabaseMCPServer {
       
       const sales = await Sale.find({
         saleDate: { $gte: start, $lte: end }
-      }).populate('customer').lean()
+      } as any).populate('customer').lean()
       
       const totalSales = sales.reduce((sum, sale) => sum + (sale.amount || 0), 0)
       const avgSaleAmount = sales.length > 0 ? totalSales / sales.length : 0
@@ -380,7 +380,7 @@ export class BusinessDatabaseMCPServer {
       if (category) query.category = new RegExp(category, 'i')
       if (lowStock) query.stock = { $lt: 10 }
       
-      const products = await Product.find(query)
+      const products = await Product.find(query as any)
         .limit(limit)
         .sort({ createdAt: -1 })
         .lean()
@@ -450,7 +450,7 @@ export class BusinessDatabaseMCPServer {
       if (includeSales) {
         const sales = await Sale.find({
           saleDate: { $gte: start, $lte: now }
-        }).lean()
+        } as any).lean()
         
         result.sales = {
           total: sales.reduce((sum, sale) => sum + (sale.amount || 0), 0),
@@ -462,7 +462,7 @@ export class BusinessDatabaseMCPServer {
       if (includeExpenses) {
         const expenses = await Expense.find({
           date: { $gte: start, $lte: now }
-        }).lean()
+        } as any).lean()
         
         result.expenses = {
           total: expenses.reduce((sum, expense) => sum + (expense.amount || 0), 0),
