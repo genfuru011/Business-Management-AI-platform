@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { processBusinessQuery } from '@/lib/ai-agent'
+import { processEnhancedBusinessQuery } from '@/lib/enhanced-ai-agent'
 
 export const maxDuration = 30
 
@@ -36,8 +36,8 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    // AIエージェントでクエリを処理
-    const result = await processBusinessQuery(userQuery, {
+    // Enhanced AIエージェントでクエリを処理（MCP統合版）
+    const result = await processEnhancedBusinessQuery(userQuery, {
       provider,
       apiKey,
       modelId,

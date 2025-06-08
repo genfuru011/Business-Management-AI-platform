@@ -4,51 +4,74 @@
       "id": "S2023-06-001",
       "customerId": "C1001",
       "productId": "P001",
+      "productName": "業務管理システム（基本パッケージ）",
+      "description": "基本的な顧客管理機能を含むシステム",
       "quantity": 1,
-      "totalAmount": 330000,
-      "date": "2025-06-10",
+      "unitPrice": 330000,
+      "amount": 330000,
+      "saleDate": "2025-06-10",
       "paymentMethod": "bank_transfer",
-      "status": "completed"
+      "saleType": "invoice_based",
+      "status": "completed",
+      "notes": "請求書 INV-2023-001 から生成"
     },
     {
       "id": "S2023-06-002",
       "customerId": "C1002",
       "productId": "P002",
+      "productName": "在庫管理システム",
+      "description": "在庫管理とレポート機能",
       "quantity": 1,
-      "totalAmount": 275000,
-      "date": "2025-06-15",
+      "unitPrice": 275000,
+      "amount": 275000,
+      "saleDate": "2025-06-15",
       "paymentMethod": "credit_card",
-      "status": "completed"
+      "saleType": "invoice_based",
+      "status": "completed",
+      "notes": "請求書 INV-2023-002 から生成"
     },
     {
       "id": "S2023-06-003",
       "customerId": "C1003",
-      "productId": "P003",
+      "productName": "カスタマイズ開発",
+      "description": "顧客専用機能の開発",
       "quantity": 1,
-      "totalAmount": 550000,
-      "date": "2025-06-20",
+      "unitPrice": 550000,
+      "amount": 550000,
+      "saleDate": "2025-06-20",
       "paymentMethod": "bank_transfer",
-      "status": "completed"
+      "saleType": "direct_sale",
+      "status": "completed",
+      "notes": "直接販売 - 請求書なし"
     },
     {
       "id": "S2023-05-001",
       "customerId": "C1001",
       "productId": "P004",
+      "productName": "保守サービス",
+      "description": "年間保守契約",
       "quantity": 1,
-      "totalAmount": 165000,
-      "date": "2025-05-25",
+      "unitPrice": 165000,
+      "amount": 165000,
+      "saleDate": "2025-05-25",
       "paymentMethod": "credit_card",
-      "status": "completed"
+      "saleType": "invoice_based",
+      "status": "completed",
+      "notes": "年間保守契約"
     },
     {
       "id": "S2023-05-002",
       "customerId": "C1004",
-      "productId": "P005",
-      "quantity": 1,
-      "totalAmount": 440000,
-      "date": "2025-05-18",
+      "productName": "コンサルティングサービス",
+      "description": "業務改善コンサルティング",
+      "quantity": 10,
+      "unitPrice": 44000,
+      "amount": 440000,
+      "saleDate": "2025-05-18",
       "paymentMethod": "bank_transfer",
-      "status": "completed"
+      "saleType": "direct_sale",
+      "status": "completed",
+      "notes": "直接サービス提供"
     }
   ]
 }

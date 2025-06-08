@@ -22,7 +22,7 @@ import {
 
 interface Sale {
   _id: string
-  invoice: {
+  invoice?: {
     _id: string
     invoiceNumber: string
   }
@@ -34,6 +34,11 @@ interface Sale {
   amount: number
   paymentMethod: 'cash' | 'credit_card' | 'bank_transfer' | 'paypal' | 'other'
   saleDate: string
+  saleType: 'invoice_based' | 'direct_sale'
+  productName?: string
+  description?: string
+  quantity?: number
+  unitPrice?: number
   notes?: string
 }
 
@@ -51,12 +56,14 @@ interface Expense {
 export default function FinancesPage() {
   const [sales, setSales] = useState<Sale[]>([])
   const [expenses, setExpenses] = useState<Expense[]>([])
+  const [customers, setCustomers] = useState<Array<{_id: string, name: string, company?: string}>>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [activeTab, setActiveTab] = useState<'sales' | 'expenses' | 'summary'>('summary')
   const [searchTerm, setSearchTerm] = useState('')
   const [dateRange, setDateRange] = useState('month')
   const [showAddExpense, setShowAddExpense] = useState(false)
+  const [showAddSale, setShowAddSale] = useState(false)
 
   // 新規支出フォームの状態
   const [expenseForm, setExpenseForm] = useState({
@@ -67,9 +74,35 @@ export default function FinancesPage() {
     notes: ''
   })
 
+  // 新規売上フォームの状態
+  const [saleForm, setSaleForm] = useState({
+    customer: '',
+    productName: '',
+    description: '',
+    quantity: '1',
+    unitPrice: '',
+    amount: '',
+    paymentMethod: 'cash',
+    notes: ''
+  })
+
   useEffect(() => {
     fetchFinancialData()
+    fetchCustomers()
   }, [])
+
+  const fetchCustomers = async () => {
+    try {
+      const response = await fetch('/api/customers')
+      const result = await response.json()
+      
+      if (result.success) {
+        setCustomers(result.data)
+      }
+    } catch (error) {
+      console.error('顧客データの取得エラー:', error)
+    }
+  }
 
   const fetchFinancialData = async () => {
     try {
@@ -109,6 +142,67 @@ export default function FinancesPage() {
       setExpenses([])
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleSaleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    
+    try {
+      const amount = parseFloat(saleForm.amount) || (parseFloat(saleForm.quantity) * parseFloat(saleForm.unitPrice))
+      
+      if (!amount || amount <= 0) {
+        throw new Error('有効な金額を入力してください')
+      }
+      
+      const saleData = {
+        customer: saleForm.customer,
+        productName: saleForm.productName,
+        description: saleForm.description,
+        quantity: parseInt(saleForm.quantity) || 1,
+        unitPrice: parseFloat(saleForm.unitPrice) || 0,
+        amount: amount,
+        paymentMethod: saleForm.paymentMethod,
+        notes: saleForm.notes,
+        saleType: 'direct_sale',
+        saleDate: new Date().toISOString()
+      }
+
+      const response = await fetch('/api/sales', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(saleData)
+      })
+
+      if (!response.ok) {
+        throw new Error('売上の作成に失敗しました')
+      }
+
+      const result = await response.json()
+      if (result.success) {
+        // フォームリセット
+        setSaleForm({
+          customer: '',
+          productName: '',
+          description: '',
+          quantity: '1',
+          unitPrice: '',
+          amount: '',
+          paymentMethod: 'cash',
+          notes: ''
+        })
+        setShowAddSale(false)
+        
+        // データ更新
+        await fetchFinancialData()
+      } else {
+        throw new Error(result.message || '売上の作成に失敗しました')
+      }
+    } catch (error) {
+      console.error('売上の作成に失敗しました:', error)
+      setError('売上の作成中にエラーが発生しました')
     }
   }
 
@@ -241,13 +335,22 @@ export default function FinancesPage() {
     <div className="p-8">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold">財務管理</h1>
-        <Button 
-          onClick={() => setShowAddExpense(true)}
-          className="bg-red-600 hover:bg-red-700"
-        >
-          <Plus className="mr-2 h-4 w-4" />
-          支出を追加
-        </Button>
+        <div className="flex space-x-2">
+          <Button 
+            onClick={() => setShowAddSale(true)}
+            className="bg-green-600 hover:bg-green-700"
+          >
+            <Plus className="mr-2 h-4 w-4" />
+            売上を追加
+          </Button>
+          <Button 
+            onClick={() => setShowAddExpense(true)}
+            className="bg-red-600 hover:bg-red-700"
+          >
+            <Plus className="mr-2 h-4 w-4" />
+            支出を追加
+          </Button>
+        </div>
       </div>
 
       {/* 統計カード */}
@@ -400,7 +503,11 @@ export default function FinancesPage() {
               <div className="text-center py-12">
                 <TrendingUp className="mx-auto h-12 w-12 text-gray-400 mb-4" />
                 <h3 className="text-lg font-medium text-gray-900 mb-2">売上データがありません</h3>
-                <p className="text-gray-500">請求書の支払いが完了すると、ここに売上データが表示されます。</p>
+                <p className="text-gray-500 mb-4">売上を追加してください。</p>
+                <Button onClick={() => setShowAddSale(true)}>
+                  <Plus className="mr-2 h-4 w-4" />
+                  売上を追加
+                </Button>
               </div>
             ) : (
               <div className="space-y-4">
@@ -409,9 +516,14 @@ export default function FinancesPage() {
                     <div className="flex items-center justify-between">
                       <div className="flex-1">
                         <div className="flex items-center gap-4 mb-2">
-                          <h3 className="font-semibold">{sale.invoice.invoiceNumber}</h3>
-                          <Badge className="bg-green-100 text-green-800">
-                            売上
+                          <h3 className="font-semibold">
+                            {sale.saleType === 'invoice_based' && sale.invoice
+                              ? sale.invoice.invoiceNumber
+                              : sale.productName || 'Direct Sale'
+                            }
+                          </h3>
+                          <Badge className={sale.saleType === 'invoice_based' ? "bg-blue-100 text-blue-800" : "bg-green-100 text-green-800"}>
+                            {sale.saleType === 'invoice_based' ? '請求書売上' : '直接売上'}
                           </Badge>
                         </div>
                         
@@ -521,6 +633,136 @@ export default function FinancesPage() {
             )}
           </CardContent>
         </Card>
+      )}
+
+      {/* 新規売上追加フォーム */}
+      {showAddSale && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full max-h-screen overflow-y-auto">
+            <h2 className="text-xl font-bold mb-4">新規売上追加</h2>
+            <form onSubmit={handleSaleSubmit} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-1">顧客</label>
+                <select
+                  value={saleForm.customer}
+                  onChange={(e) => setSaleForm({...saleForm, customer: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  required
+                >
+                  <option value="">顧客を選択してください</option>
+                  {customers.map((customer) => (
+                    <option key={customer._id} value={customer._id}>
+                      {customer.name} {customer.company && `(${customer.company})`}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium mb-1">商品名</label>
+                <Input
+                  value={saleForm.productName}
+                  onChange={(e) => setSaleForm({...saleForm, productName: e.target.value})}
+                  placeholder="商品名を入力"
+                  required
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium mb-1">説明</label>
+                <Input
+                  value={saleForm.description}
+                  onChange={(e) => setSaleForm({...saleForm, description: e.target.value})}
+                  placeholder="商品の説明"
+                />
+              </div>
+              
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="block text-sm font-medium mb-1">数量</label>
+                  <Input
+                    type="number"
+                    value={saleForm.quantity}
+                    onChange={(e) => {
+                      setSaleForm({...saleForm, quantity: e.target.value})
+                      // 数量が変更されたら金額を自動計算
+                      if (saleForm.unitPrice) {
+                        const amount = parseFloat(e.target.value) * parseFloat(saleForm.unitPrice)
+                        setSaleForm(prev => ({...prev, quantity: e.target.value, amount: amount.toString()}))
+                      }
+                    }}
+                    placeholder="数量"
+                    min="1"
+                    required
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium mb-1">単価</label>
+                  <Input
+                    type="number"
+                    value={saleForm.unitPrice}
+                    onChange={(e) => {
+                      setSaleForm({...saleForm, unitPrice: e.target.value})
+                      // 単価が変更されたら金額を自動計算
+                      if (saleForm.quantity) {
+                        const amount = parseFloat(saleForm.quantity) * parseFloat(e.target.value)
+                        setSaleForm(prev => ({...prev, unitPrice: e.target.value, amount: amount.toString()}))
+                      }
+                    }}
+                    placeholder="単価"
+                    min="0"
+                  />
+                </div>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium mb-1">合計金額</label>
+                <Input
+                  type="number"
+                  value={saleForm.amount}
+                  onChange={(e) => setSaleForm({...saleForm, amount: e.target.value})}
+                  placeholder="合計金額"
+                  min="0"
+                  required
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium mb-1">支払い方法</label>
+                <select
+                  value={saleForm.paymentMethod}
+                  onChange={(e) => setSaleForm({...saleForm, paymentMethod: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                >
+                  <option value="cash">現金</option>
+                  <option value="credit_card">クレジットカード</option>
+                  <option value="bank_transfer">銀行振込</option>
+                  <option value="paypal">PayPal</option>
+                  <option value="other">その他</option>
+                </select>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium mb-1">備考</label>
+                <Input
+                  value={saleForm.notes}
+                  onChange={(e) => setSaleForm({...saleForm, notes: e.target.value})}
+                  placeholder="備考（任意）"
+                />
+              </div>
+              
+              <div className="flex justify-end space-x-2 pt-4">
+                <Button type="button" variant="outline" onClick={() => setShowAddSale(false)}>
+                  キャンセル
+                </Button>
+                <Button type="submit" className="bg-green-600 hover:bg-green-700">
+                  追加
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
       )}
 
       {/* 新規支出追加フォーム */}
