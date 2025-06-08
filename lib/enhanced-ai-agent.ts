@@ -95,8 +95,14 @@ export class EnhancedBusinessAIAgent {
         error: businessData.error
       }
       
-      // Generate AI response
-      return this.generateEnhancedResponse(context)
+      // Try to generate AI response, fallback to MCP analysis if AI model fails
+      try {
+        return await this.generateEnhancedResponse(context)
+      } catch (aiError) {
+        console.log('AI model not available, using MCP data analysis fallback...', aiError instanceof Error ? aiError.message : aiError)
+        // Fallback to MCP data analysis when AI model is not available
+        return this.generateMCPDataAnalysisFallback(context)
+      }
     } catch (error) {
       console.error('Enhanced AI Agent Error:', error)
       throw new Error(`Failed to process query: ${error instanceof Error ? error.message : 'Unknown error'}`)
@@ -254,6 +260,130 @@ export class EnhancedBusinessAIAgent {
         { role: "user", content: context.userQuery }
       ],
     })
+  }
+
+  /**
+   * Generate structured analysis based on MCP data when AI model is not available
+   */
+  private async generateMCPDataAnalysisFallback(context: EnhancedAgentContext) {
+    const analysisReport = this.buildMCPAnalysisReport(context)
+    
+    // Create a mock streaming response for consistency with the API
+    const mockStream = new ReadableStream({
+      start(controller) {
+        controller.enqueue(new TextEncoder().encode(analysisReport))
+        controller.close()
+      }
+    })
+
+    return {
+      toAIStream: () => mockStream,
+      textStream: this.createAsyncGenerator(analysisReport)
+    }
+  }
+
+  /**
+   * Build structured analysis report from MCP data
+   */
+  private buildMCPAnalysisReport(context: EnhancedAgentContext): string {
+    let report = `# ビジネス分析レポート (MCP統合版)\n\n`
+    report += `📊 **分析対象**: ${context.userQuery}\n`
+    report += `🔗 **データソース**: Model Context Protocol (MCP)\n`
+    report += `⏰ **分析日時**: ${new Date().toLocaleString('ja-JP')}\n\n`
+
+    // Error handling
+    if (context.error) {
+      report += `⚠️ **データアクセス問題**:\n${context.error.message}\n\n`
+    }
+
+    // Customer analysis
+    if (context.businessData.customers) {
+      const customerData = context.businessData.customers as any
+      report += `## 👥 顧客分析\n`
+      report += `- **総顧客数**: ${customerData.total || customerData.customers?.length || 0}名\n`
+      report += `- **データソース**: ${customerData.source || 'MongoDB'}\n`
+      if (customerData.summary) {
+        report += `- **新規顧客**: ${customerData.summary.recentCustomers || 0}名（過去1ヶ月）\n`
+      }
+      report += `\n`
+    }
+
+    // Sales analysis
+    if (context.businessData.sales) {
+      const salesData = context.businessData.sales as any
+      report += `## 📈 売上分析\n`
+      report += `- **分析期間**: ${salesData.period || 'month'}\n`
+      if (salesData.analytics) {
+        report += `- **総売上**: ¥${salesData.analytics.totalSales?.toLocaleString() || 0}\n`
+        report += `- **取引件数**: ${salesData.analytics.salesCount || 0}件\n`
+        report += `- **平均取引額**: ¥${salesData.analytics.averageSaleAmount?.toLocaleString() || 0}\n`
+      }
+      report += `- **データソース**: ${salesData.source || 'MongoDB'}\n\n`
+    }
+
+    // Inventory analysis
+    if (context.businessData.inventory) {
+      const inventoryData = context.businessData.inventory as any
+      report += `## 📦 在庫分析\n`
+      report += `- **商品総数**: ${inventoryData.total || inventoryData.products?.length || 0}点\n`
+      if (inventoryData.summary) {
+        report += `- **在庫不足**: ${inventoryData.summary.lowStockItems || 0}点\n`
+        report += `- **在庫総額**: ¥${inventoryData.summary.totalInventoryValue?.toLocaleString() || 0}\n`
+        report += `- **カテゴリ数**: ${inventoryData.summary.categories?.length || 0}\n`
+      }
+      report += `- **データソース**: ${inventoryData.source || 'MongoDB'}\n\n`
+    }
+
+    // Financial analysis
+    if (context.businessData.finances) {
+      const financialData = context.businessData.finances as any
+      report += `## 💰 財務分析\n`
+      report += `- **分析期間**: ${financialData.period || 'month'}\n`
+      if (financialData.sales) {
+        report += `- **総売上**: ¥${financialData.sales.total?.toLocaleString() || 0}\n`
+      }
+      if (financialData.expenses) {
+        report += `- **総支出**: ¥${financialData.expenses.total?.toLocaleString() || 0}\n`
+      }
+      if (financialData.profitability) {
+        report += `- **利益率**: ${financialData.profitability.profitMargin?.toFixed(2) || 0}%\n`
+        report += `- **純利益**: ¥${financialData.profitability.grossProfit?.toLocaleString() || 0}\n`
+      }
+      report += `- **データソース**: ${financialData.source || 'MongoDB'}\n\n`
+    }
+
+    // MCP system info
+    report += `## 🔗 MCP統合情報\n`
+    report += `- **利用可能ツール**: ${context.mcpTools.join(', ')}\n`
+    report += `- **利用可能リソース**: ${context.mcpResources.length}個\n`
+    report += `- **データアクセス方式**: 標準化されたMCPプロトコル\n\n`
+
+    // Recommendations
+    report += `## 💡 提案事項\n`
+    if (context.businessData.inventory?.summary?.lowStockItems > 0) {
+      report += `- ⚠️ ${context.businessData.inventory.summary.lowStockItems}点の商品で在庫不足 → 早急な補充計画が必要\n`
+    }
+    if (context.businessData.finances?.profitability?.profitMargin) {
+      const margin = context.businessData.finances.profitability.profitMargin
+      if (margin > 20) {
+        report += `- ✅ 利益率${margin.toFixed(1)}%は優秀 → 現在の戦略を継続\n`
+      } else if (margin < 5) {
+        report += `- ⚠️ 利益率${margin.toFixed(1)}%が低い → コスト削減または価格見直しを検討\n`
+      }
+    }
+
+    report += `\n---\n`
+    report += `*このレポートはMCP (Model Context Protocol) を使用して生成されました*\n`
+    report += `*リアルタイムデータベース連携により正確な分析を提供*`
+
+    return report
+  }
+
+  /**
+   * Create async generator for streaming response compatibility
+   */
+  private async *createAsyncGenerator(text: string) {
+    yield text
   }
 
   /**
