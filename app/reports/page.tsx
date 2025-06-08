@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -61,11 +61,7 @@ export default function ReportsPage() {
   const [selectedPeriod, setSelectedPeriod] = useState('month')
   const [reportType, setReportType] = useState('overview')
 
-  useEffect(() => {
-    fetchReportData()
-  }, [selectedPeriod])
-
-  const fetchReportData = async () => {
+  const fetchReportData = useCallback(async () => {
     try {
       setLoading(true)
       setError(null)
@@ -147,7 +143,11 @@ export default function ReportsPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [selectedPeriod])
+
+  useEffect(() => {
+    fetchReportData()
+  }, [fetchReportData])
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('ja-JP', {

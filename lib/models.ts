@@ -315,10 +315,7 @@ const ExpenseSchema = new mongoose.Schema({
 })
 
 // インデックスの設定
-CustomerSchema.index({ email: 1 })
-ProductSchema.index({ sku: 1 })
 ProductSchema.index({ name: 1, category: 1 })
-InvoiceSchema.index({ invoiceNumber: 1 })
 InvoiceSchema.index({ customer: 1, issueDate: -1 })
 SaleSchema.index({ saleDate: -1 })
 ExpenseSchema.index({ expenseDate: -1, category: 1 })
