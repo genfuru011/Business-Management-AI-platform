@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -105,11 +105,7 @@ export default function Dashboard() {
     }
   }
 
-  useEffect(() => {
-    fetchStats()
-  }, [selectedPeriod])
-
-  const fetchStats = async () => {
+  const fetchStats = useCallback(async () => {
     try {
       if (!loading) {
         setPeriodLoading(true)
@@ -145,7 +141,11 @@ export default function Dashboard() {
       setLoading(false)
       setPeriodLoading(false)
     }
-  }
+  }, [selectedPeriod, loading])
+
+  useEffect(() => {
+    fetchStats()
+  }, [fetchStats])
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('ja-JP', {
