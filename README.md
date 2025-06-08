@@ -15,7 +15,7 @@ AI統合ビジネス管理プラットフォームは、AIを活用してビジ�
 
 ### ✨ 主な特徴
 
-- 🧠 **AIビジネスエージェント** - 自然言語でビジネス分析・提案を実現
+- 🧠 **AIビジネスエージェント** - OpenRouter + DeepSeek R1で自然言語ビジネス分析を実現
 - 📊 **リアルタイム監視** - ビジネス指標をリアルタイムで可視化
 - 📈 **パフォーマンス分析** - システム・業務パフォーマンスの最適化提案
 - 📝 **自動レポート生成** - 包括的なビジネスレポートを自動作成
@@ -23,6 +23,39 @@ AI統合ビジネス管理プラットフォームは、AIを活用してビジ�
 - 🔄 **AI学習システム** - ユーザーフィードバックから継続的に改善
 
 ## 📦 システム要件
+
+### 💻 開発環境
+- Node.js 18.0.0 以上
+- npm 9.0.0 以上  
+- MongoDB (オプション、JSONファイルでも動作)
+
+### 🤖 AI環境
+- **OpenRouter アカウント**: 無料でDeepSeek R1 APIを利用可能
+- **推奨モデル**: DeepSeek R1 Distill Llama 70B (無料)
+- **設定**: `.env.local`でAPIキーを設定
+
+### 🚀 クイックスタート
+
+```bash
+# 1. リポジトリをクローン
+git clone https://github.com/genfuru011/Business-Management-AI-platform.git
+cd Business-Management-AI-platform
+
+# 2. 依存関係をインストール
+npm install
+
+# 3. OpenRouter APIキーを設定
+cp .env.example .env.local
+# .env.localでNEXT_PUBLIC_AI_API_KEYを設定
+
+# 4. 開発サーバーを起動
+npm run dev
+
+# 5. ブラウザでアクセス
+# http://localhost:3000
+```
+
+📚 **詳細なセットアップ手順**: [docs/OPENROUTER_SETUP.md](docs/OPENROUTER_SETUP.md)
 
 ## 🚀 主要機能
 
@@ -59,7 +92,7 @@ AI統合ビジネス管理プラットフォームは、AIを活用してビジ�
 ### 技術スタック
 
 - **フロントエンド**: Next.js, React, TailwindCSS
-- **AI処理**: Ollama, AI SDK
+- **AI処理**: OpenRouter + DeepSeek R1, AI SDK
 - **データ処理**: Custom Business Analytics Engines
 - **UI/UX**: Lucide Icons, Shadcn UI Components
 
@@ -72,6 +105,10 @@ cd Business-Management-AI-platform
 
 # 依存関係をインストール
 npm install
+
+# OpenRouter APIキーを設定（.env.exampleを参照）
+cp .env.example .env.local
+# .env.localでNEXT_PUBLIC_AI_API_KEYを設定
 
 # 開発サーバーを起動
 npm run dev
@@ -120,7 +157,7 @@ npm run dev
 
 - **フロントエンド**: Next.js 15.0.0, React, TypeScript
 - **スタイリング**: Tailwind CSS, shadcn/ui
-- **AI処理**: Ollama, Vercel AI SDK
+- **AI処理**: OpenRouter + DeepSeek R1, Vercel AI SDK
 - **データベース**: MongoDB, JSONデータ
 - **データ処理**: カスタムビジネス分析エンジン
 - **UIコンポーネント**: Lucide Icons, shadcn/ui
@@ -145,9 +182,11 @@ npm run dev
 
 ## 📄 関連ドキュメント
 
-- [インストールガイド](./docs/INSTALLATION_GUIDE.md)
-- [プロジェクト完成レポート](./docs/PROJECT_COMPLETION_REPORT.md)
-- [最終システムテスト結果](./docs/FINAL_SYSTEM_TEST.md)
+- [🚀 OpenRouter + DeepSeek R1 セットアップガイド](./docs/OPENROUTER_SETUP.md)
+- [🏗️ システムアーキテクチャ](./docs/ARCHITECTURE_OVERVIEW.md)
+- [🧠 AIエージェント仕様](./docs/AI_AGENT_SPEC.md)
+- [📋 インストールガイド](./docs/INSTALLATION_GUIDE.md)
+- [🧪 最終システムテスト結果](./docs/FINAL_SYSTEM_TEST.md)
 
 ## 🆘 トラブルシューティング
 
