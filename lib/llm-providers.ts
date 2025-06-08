@@ -104,9 +104,14 @@ export const LLM_PROVIDERS: LLMProvider[] = [
     name: 'OpenRouter',
     models: [
       {
+        id: 'deepseek/deepseek-r1-0528',
+        name: 'DeepSeek R1 0528',
+        description: 'DeepSeek R1最新版（推奨・無料）'
+      },
+      {
         id: 'deepseek/deepseek-r1-distill-llama-70b',
         name: 'DeepSeek R1 Distill Llama 70B',
-        description: 'DeepSeek R1の蒸留版（推奨・無料）'
+        description: 'DeepSeek R1の蒸留版（無料）'
       },
       {
         id: 'deepseek/deepseek-r1-distill-qwen-32b',
@@ -170,7 +175,7 @@ export interface LLMSettings {
 
 export const DEFAULT_LLM_SETTINGS: LLMSettings = {
   providerId: 'openrouter',
-  modelId: 'deepseek/deepseek-r1-distill-llama-70b',
+  modelId: 'deepseek/deepseek-r1-0528',
   apiKey: '',
   customEndpoint: ''
 }

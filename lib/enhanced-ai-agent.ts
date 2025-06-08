@@ -65,7 +65,7 @@ export class EnhancedBusinessAIAgent {
     this.aiConfig = {
       provider: config?.provider || "openrouter",
       apiKey: config?.apiKey || process.env.AI_API_KEY || "",
-      modelId: config?.modelId || "deepseek/deepseek-r1-distill-llama-70b",
+      modelId: config?.modelId || "deepseek/deepseek-r1-0528",
       apiEndpoint: config?.apiEndpoint
     }
     

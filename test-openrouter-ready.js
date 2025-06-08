@@ -55,7 +55,8 @@ buildProcess.on('close', (code) => {
         console.log('   • AI Agent spec: docs/AI_AGENT_SPEC.md')
         
         console.log('\n🆓 Available free models:')
-        console.log('   • deepseek/deepseek-r1-distill-llama-70b (recommended)')
+        console.log('   • deepseek/deepseek-r1-0528 (recommended, free)')
+        console.log('   • deepseek/deepseek-r1-distill-llama-70b (free)')
         console.log('   • deepseek/deepseek-r1-distill-qwen-32b')
         
       } else {

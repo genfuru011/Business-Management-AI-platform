@@ -5,7 +5,7 @@
 ## 📋 概要
 
 - **プロバイダー**: OpenRouter
-- **推奨モデル**: DeepSeek R1 Distill Llama 70B (無料)
+- **推奨モデル**: DeepSeek R1 0528 (無料)
 - **API互換性**: OpenAI形式
 - **エンドポイント**: `https://openrouter.ai/api/v1`
 
@@ -24,7 +24,7 @@
 ```bash
 # OpenRouter設定
 NEXT_PUBLIC_AI_PROVIDER=openrouter
-NEXT_PUBLIC_AI_MODEL=deepseek/deepseek-r1-distill-llama-70b
+NEXT_PUBLIC_AI_MODEL=deepseek/deepseek-r1-0528
 NEXT_PUBLIC_AI_API_KEY=your_openrouter_api_key_here
 NEXT_PUBLIC_AI_ENDPOINT=https://openrouter.ai/api/v1
 
@@ -41,8 +41,9 @@ NEXT_PUBLIC_APP_NAME=AI統合ビジネス管理プラットフォーム
 
 ```typescript
 // 無料モデル（推奨）
-'deepseek/deepseek-r1-distill-llama-70b'  // DeepSeek R1 蒸留版（推奨）
-'deepseek/deepseek-r1-distill-qwen-32b'   // DeepSeek R1 Qwen版
+'deepseek/deepseek-r1-0528'               // DeepSeek R1 最新版（推奨・無料）
+'deepseek/deepseek-r1-distill-llama-70b'  // DeepSeek R1 蒸留版（無料）
+'deepseek/deepseek-r1-distill-qwen-32b'   // DeepSeek R1 Qwen版（無料）
 
 // その他のモデル
 'deepseek/deepseek-r1'                    // DeepSeek R1 フルモデル
@@ -61,7 +62,7 @@ const result = await processBusinessQuery(
   {
     provider: 'openrouter',
     apiKey: process.env.NEXT_PUBLIC_AI_API_KEY,
-    modelId: 'deepseek/deepseek-r1-distill-llama-70b',
+    modelId: 'deepseek/deepseek-r1-0528',
     apiEndpoint: 'https://openrouter.ai/api/v1'
   }
 )
@@ -77,7 +78,7 @@ const response = await fetch('/api/business-agent', {
     query: "今月の財務状況を教えて",
     provider: 'openrouter',
     apiKey: 'your_openrouter_api_key',
-    modelId: 'deepseek/deepseek-r1-distill-llama-70b'
+    modelId: 'deepseek/deepseek-r1-0528'
   })
 })
 ```
@@ -85,6 +86,7 @@ const response = await fetch('/api/business-agent', {
 ## 💰 料金について
 
 ### 無料モデル
+- **DeepSeek R1 0528**: 完全無料（推奨）
 - **DeepSeek R1 Distill Llama 70B**: 完全無料
 - **DeepSeek R1 Distill Qwen 32B**: 完全無料
 

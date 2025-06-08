@@ -109,7 +109,7 @@ AIエージェントは環境変数で設定可能：
 
 ```
 NEXT_PUBLIC_AI_PROVIDER=openrouter
-NEXT_PUBLIC_AI_MODEL=deepseek/deepseek-r1-distill-llama-70b
+NEXT_PUBLIC_AI_MODEL=deepseek/deepseek-r1-0528
 NEXT_PUBLIC_AI_API_KEY=your_openrouter_api_key
 NEXT_PUBLIC_AI_ENDPOINT=https://openrouter.ai/api/v1 (optional)
 ```
